@@ -1,0 +1,23 @@
+/* Custom calendar styles */
+.rdp-custom {
+  --rdp-accent-color: rgb(37, 99, 235);
+  --rdp-background-color: rgb(219, 234, 254);
+  font-size: 14px;
+}
+
+.rdp-custom .rdp-day_button {
+  border-radius: 0.5rem;
+}
+
+.rdp-custom .rdp-day_button:hover:not([disabled]):not(.rdp-day_selected) {
+  background-color: rgb(243, 244, 246);
+}
+
+.rdp-custom .rdp-day_selected {
+  background-color: rgb(37, 99, 235);
+  color: white;
+}
+
+.rdp-custom .rdp-day_selected:hover {
+  background-color: rgb(29, 78, 216);
+}

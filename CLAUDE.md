@@ -292,6 +292,14 @@ DELETE /admin/villas/{id}/images       → admin.villas.images.delete (hapus fot
   ```
 - **Tampilan Tamu:** Di halaman Beranda, Daftar Villa, dan Detail Villa, sistem mengecek `is_array($f)`. Jika custom, nama dan emoji dirender langsung; jika standar, icon SVG dan label standar dirender.
 
+### Fitur Multi-Bahasa (Bilingual Indonesia & English)
+- **Komponen Switcher:** Menggunakan komponen blade `resources/views/components/language-switch.blade.php` dengan desain *pill slider* hitam-putih (ID/EN) yang memiliki efek transisi geser mulus (*smooth sliding animation*) berbasis Alpine.js & Tailwind CSS.
+- **Penempatan:** Disediakan pada Navbar Desktop (di sebelah menu Cek Pesanan) dan pada Top Bar Mobile (di sebelah tombol menu hamburger) serta dalam menu mobile.
+- **Manajemen Sesi & Middleware:** 
+  - Middleware `App\Http\Middleware\SetLocale` membaca pilihan bahasa dari session (`Session::get('locale')`), memvalidasi nilai (`id` atau `en`), lalu menetapkan bahasa via `App::setLocale()` dan `Carbon::setLocale()`.
+  - Route `/lang/{locale}` menangani perubahan bahasa secara instan dan mengembalikan tamu ke halaman sebelumnya (`redirect()->back()`).
+- **Penyimpanan Terjemahan:** Menggunakan format JSON resmi Laravel pada `lang/en.json` dan `lang/id.json`. Seluruh teks UI publik (Navigasi, Pencarian, Kartu Villa, Detail Villa, Cek Pesanan, Syarat & Ketentuan, dan Pembayaran) dibungkus helper `__('...')` dengan fallback aman ke bahasa Indonesia.
+
 ### Peak Season Multi-Periode
 - Mendukung beberapa rentang tanggal peak season per villa (contoh: tanggal 15–20 dan tanggal 25–30 dalam bulan yang sama).
 - Dikelola melalui modal "Kelola Peak Season" di dashboard admin villa.

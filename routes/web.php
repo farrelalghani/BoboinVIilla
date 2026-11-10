@@ -12,6 +12,15 @@ use Illuminate\Support\Facades\Storage;
 use Livewire\Volt\Volt;
 use Maatwebsite\Excel\Facades\Excel;
 
+// Language switch route
+Route::get('/lang/{locale}', function (string $locale) {
+    if (in_array($locale, ['id', 'en'], true)) {
+        session(['locale' => $locale]);
+        app()->setLocale($locale);
+    }
+    return redirect()->back(fallback: route('home'));
+})->name('set-locale');
+
 // Public guest routes
 Volt::route('/', 'guest.home')->name('home');
 Volt::route('/villas', 'guest.villas-index')->name('villas.index');

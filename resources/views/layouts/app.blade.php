@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,41 +28,46 @@
                     <nav class="hidden md:flex items-center gap-6 ml-auto">
                         <a href="{{ route('villas.index') }}" wire:navigate
                            class="text-[#3a6484] hover:text-[#2f5370] transition text-sm font-medium">
-                            Cari Villa
+                            {{ __('Cari Villa') }}
                         </a>
                         <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
                            class="text-[#3a6484] hover:text-[#2f5370] transition text-sm font-medium">
-                            Cek Pesanan
+                            {{ __('Cek Pesanan') }}
                         </a>
                         @auth
                             @if(auth()->user()->hasRole('admin'))
                                 <a href="{{ route('admin.dashboard') }}" wire:navigate
                                    class="px-4 py-2 bg-[#3a6484] text-white rounded-lg text-sm font-medium hover:bg-[#2f5370] transition">
-                                    Dashboard Admin
+                                    {{ __('Dashboard Admin') }}
                                 </a>
                             @endif
                         @endauth
+                        {{-- Language Switcher ID/EN --}}
+                        <x-language-switch />
                     </nav>
 
-                    {{-- Hamburger mobile --}}
-                    <button id="mobile-menu-btn" class="md:hidden p-2 text-[#3a6484] ml-auto z-10">
-                        <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                        <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
+                    {{-- Kontrol Mobile (Switch Language + Hamburger) --}}
+                    <div class="md:hidden flex items-center gap-2 ml-auto z-10">
+                        <x-language-switch />
+                        <button id="mobile-menu-btn" class="p-2 text-[#3a6484]" aria-label="Menu">
+                            <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                            <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 {{-- Mobile menu --}}
                 <div id="mobile-menu" class="hidden md:hidden border-t border-[#3a6484]/20 py-4">
                     <nav class="flex flex-col gap-3">
-                        <a href="{{ route('villas.index') }}" wire:navigate class="text-[#3a6484] text-sm font-medium py-2">Cari Villa</a>
-                        <a href="{{ route('guest.cek-pesanan') }}" wire:navigate class="text-[#3a6484] text-sm font-medium py-2">Cek Pesanan</a>
+                        <a href="{{ route('villas.index') }}" wire:navigate class="text-[#3a6484] text-sm font-medium py-2">{{ __('Cari Villa') }}</a>
+                        <a href="{{ route('guest.cek-pesanan') }}" wire:navigate class="text-[#3a6484] text-sm font-medium py-2">{{ __('Cek Pesanan') }}</a>
                         @auth
                             @if(auth()->user()->hasRole('admin'))
-                                <a href="{{ route('admin.dashboard') }}" wire:navigate class="text-[#3a6484] text-sm font-medium py-2">Dashboard Admin</a>
+                                <a href="{{ route('admin.dashboard') }}" wire:navigate class="text-[#3a6484] text-sm font-medium py-2">{{ __('Dashboard Admin') }}</a>
                             @endif
                         @endauth
                     </nav>
@@ -82,7 +87,7 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-3">Boboin Villa</h3>
                         <p class="text-white/70 text-sm leading-relaxed mb-4">
-                            Temukan dan pesan villa terbaik di destinasi wisata favorit Anda dengan mudah dan terpercaya.
+                            {{ __('Temukan dan pesan villa terbaik di destinasi wisata favorit Anda dengan mudah dan terpercaya.') }}
                         </p>
                         <div class="flex items-center gap-3">
                             <a href="https://instagram.com/boboinvilla" target="_blank" rel="noopener"
@@ -102,22 +107,22 @@
                         </div>
                     </div>
                     <div>
-                        <h4 class="font-medium mb-3 text-sm">Layanan</h4>
+                        <h4 class="font-medium mb-3 text-sm">{{ __('Layanan') }}</h4>
                         <ul class="space-y-2 text-sm text-white/70">
-                            <li><a href="{{ route('villas.index') }}" wire:navigate class="hover:text-white transition">Cari Villa</a></li>
-                            <li><a href="{{ route('guest.cek-pesanan') }}" wire:navigate class="hover:text-white transition">Cek Pesanan</a></li>
+                            <li><a href="{{ route('villas.index') }}" wire:navigate class="hover:text-white transition">{{ __('Cari Villa') }}</a></li>
+                            <li><a href="{{ route('guest.cek-pesanan') }}" wire:navigate class="hover:text-white transition">{{ __('Cek Pesanan') }}</a></li>
                         </ul>
                     </div>
                     <div>
-                        <h4 class="font-medium mb-3 text-sm">Bantuan</h4>
+                        <h4 class="font-medium mb-3 text-sm">{{ __('Bantuan') }}</h4>
                         <ul class="space-y-2 text-sm text-white/70">
-                            <li><a href="https://wa.me/6285724821667?text=Halo%20Boboin%20Villa%2C%20saya%20ingin%20bertanya" target="_blank" class="hover:text-white transition">Hubungi Kami</a></li>
-                            <li><a href="{{ route('syarat-ketentuan') }}" wire:navigate class="hover:text-white transition">Syarat & Ketentuan</a></li>
+                            <li><a href="https://wa.me/6285724821667?text=Halo%20Boboin%20Villa%2C%20saya%20ingin%20bertanya" target="_blank" class="hover:text-white transition">{{ __('Hubungi Kami') }}</a></li>
+                            <li><a href="{{ route('syarat-ketentuan') }}" wire:navigate class="hover:text-white transition">{{ __('Syarat & Ketentuan') }}</a></li>
                         </ul>
                     </div>
                 </div>
                 <div class="border-t border-white/20 pt-6 text-center text-xs text-white/50">
-                    © {{ date('Y') }} Boboin Villa. All rights reserved.
+                    © {{ date('Y') }} Boboin Villa. {{ __('Hak cipta dilindungi undang-undang.') }}
                 </div>
             </div>
         </footer>
@@ -125,13 +130,13 @@
         {{-- Tombol WhatsApp mengambang — ganti nomor di bawah jika berubah --}}
         <a href="https://wa.me/6285724821667?text=Halo%20Boboin%20Villa%2C%20saya%20ingin%20bertanya%20mengenai%20pemesanan%20villa."
            target="_blank" rel="noopener"
-           title="Hubungi kami via WhatsApp"
+           title="{{ __('Hubungi kami via WhatsApp') }}"
            class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex items-center gap-2 bg-[#3a6484] text-white pl-2.5 pr-3.5 py-2.5 sm:pl-3 sm:pr-4 sm:py-3 rounded-full shadow-lg hover:shadow-xl hover:bg-[#2f5370] transition-all duration-200 group">
             <svg class="w-5 h-5 sm:w-6 sm:h-6 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
                 <path d="M12 0C5.373 0 0 5.373 0 12c0 2.126.558 4.121 1.532 5.849L.057 23.516a.75.75 0 00.927.927l5.666-1.475A11.934 11.934 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.734 9.734 0 01-4.964-1.359l-.356-.212-3.693.96.982-3.591-.232-.369A9.733 9.733 0 012.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/>
             </svg>
-            <span class="text-sm font-medium whitespace-nowrap">Hubungi Kami</span>
+            <span class="text-sm font-medium whitespace-nowrap">{{ __('Hubungi Kami') }}</span>
         </a>
 
         <script>

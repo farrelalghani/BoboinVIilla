@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'role'       => \Spatie\Permission\Middleware\RoleMiddleware::class,
             'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         ]);
+        $middleware->web(append: [
+            \App\Http\Middleware\SetLocale::class,
+        ]);
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
         $middleware->validateCsrfTokens(except: [
             'xendit/webhook',

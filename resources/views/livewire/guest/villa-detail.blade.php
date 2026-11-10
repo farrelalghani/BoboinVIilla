@@ -241,11 +241,11 @@ new #[Layout('layouts.app')] class extends Component
                         {{-- Tombol Tutup Paling Jelas di Pojok Kanan Atas --}}
                         <button type="button" @click="modalOpen = false"
                             class="fixed top-4 right-4 sm:top-6 sm:right-6 z-[100002] inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/20 hover:bg-white/30 active:bg-white/40 text-white text-xs sm:text-sm font-semibold backdrop-blur-md border border-white/30 shadow-2xl transition cursor-pointer"
-                            title="Tutup Galeri (Esc)">
+                            title="{{ __('Tutup Galeri (Esc)') }}">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/>
                             </svg>
-                            <span>Tutup</span>
+                            <span>{{ __('Tutup') }}</span>
                         </button>
 
                         {{-- Counter Badge di Pojok Kiri Atas --}}
@@ -260,7 +260,7 @@ new #[Layout('layouts.app')] class extends Component
                         {{-- Tombol Navigasi Panah Kiri (Tetap di Sisi Kiri Layar) --}}
                         <button type="button" @click.stop="prev()" x-show="photos.length > 1"
                             class="fixed left-2 sm:left-6 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-black/85 active:scale-95 text-white flex items-center justify-center shadow-2xl backdrop-blur-md border border-white/30 transition z-[100002]"
-                            title="Foto Sebelumnya (←)">
+                            title="{{ __('Foto Sebelumnya (←)') }}">
                             <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/>
                             </svg>
@@ -269,7 +269,7 @@ new #[Layout('layouts.app')] class extends Component
                         {{-- Tombol Navigasi Panah Kanan (Tetap di Sisi Kanan Layar) --}}
                         <button type="button" @click.stop="next()" x-show="photos.length > 1"
                             class="fixed right-2 sm:right-6 top-1/2 -translate-y-1/2 w-11 h-11 sm:w-14 sm:h-14 rounded-full bg-black/60 hover:bg-black/85 active:scale-95 text-white flex items-center justify-center shadow-2xl backdrop-blur-md border border-white/30 transition z-[100002]"
-                            title="Foto Berikutnya (→)">
+                            title="{{ __('Foto Berikutnya (→)') }}">
                             <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
                             </svg>
@@ -320,11 +320,11 @@ new #[Layout('layouts.app')] class extends Component
                         <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
                         </svg>
-                        Maks. {{ $villa->capacity }} tamu
+                        Maks. {{ $villa->capacity }} {{ __('tamu') }}
                     </span>
                 </div>
 
-                <h2 class="font-medium text-gray-800 text-sm sm:text-base mb-2">Tentang Villa Ini</h2>
+                <h2 class="font-medium text-gray-800 text-sm sm:text-base mb-2">{{ __('Tentang Villa Ini') }}</h2>
                 <p class="text-gray-600 text-xs sm:text-sm leading-relaxed">{{ $villa->description }}</p>
             </div>
 
@@ -332,22 +332,22 @@ new #[Layout('layouts.app')] class extends Component
             @if($villa->facilities && count($villa->facilities) > 0)
                 @php
                     $facilityLabels = [
-                        'kolam_renang' => ['label' => 'Kolam Renang', 'icon' => '🏊'],
-                        'wifi'         => ['label' => 'WiFi', 'icon' => '📶'],
-                        'ac'           => ['label' => 'AC', 'icon' => '❄️'],
-                        'dapur'        => ['label' => 'Dapur', 'icon' => '🍳'],
-                        'parkir'       => ['label' => 'Parkir', 'icon' => '🚗'],
-                        'bbq'          => ['label' => 'Area BBQ', 'icon' => '🔥'],
-                        'tv'           => ['label' => 'TV', 'icon' => '📺'],
-                        'mesin_cuci'   => ['label' => 'Mesin Cuci', 'icon' => '🫧'],
-                        'karaoke'      => ['label' => 'Karaoke', 'icon' => '🎤'],
-                        'taman'        => ['label' => 'Taman', 'icon' => '🌿'],
-                        'cctv'         => ['label' => 'CCTV', 'icon' => '📹'],
-                        'sarapan'      => ['label' => 'Sarapan', 'icon' => '🍽️'],
+                        'kolam_renang' => ['label' => __('Kolam Renang'), 'icon' => '🏊'],
+                        'wifi'         => ['label' => __('WiFi'), 'icon' => '📶'],
+                        'ac'           => ['label' => __('AC'), 'icon' => '❄️'],
+                        'dapur'        => ['label' => __('Dapur'), 'icon' => '🍳'],
+                        'parkir'       => ['label' => __('Parkir'), 'icon' => '🚗'],
+                        'bbq'          => ['label' => __('Area BBQ'), 'icon' => '🔥'],
+                        'tv'           => ['label' => __('TV'), 'icon' => '📺'],
+                        'mesin_cuci'   => ['label' => __('Mesin Cuci'), 'icon' => '🫧'],
+                        'karaoke'      => ['label' => __('Karaoke'), 'icon' => '🎤'],
+                        'taman'        => ['label' => __('Taman'), 'icon' => '🌿'],
+                        'cctv'         => ['label' => __('CCTV'), 'icon' => '📹'],
+                        'sarapan'      => ['label' => __('Sarapan'), 'icon' => '🍽️'],
                     ];
                 @endphp
                 <div class="bg-white border border-gray-100 rounded-2xl p-5 sm:p-6 shadow-sm">
-                    <h2 class="font-semibold text-gray-800 text-sm sm:text-base mb-4">Fasilitas</h2>
+                    <h2 class="font-semibold text-gray-800 text-sm sm:text-base mb-4">{{ __('Fasilitas') }}</h2>
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
                         @foreach($villa->facilities as $f)
                             @php
@@ -370,19 +370,19 @@ new #[Layout('layouts.app')] class extends Component
             @if($villa->nearby_destinations && count($villa->nearby_destinations) > 0)
                 @php
                     $categoryMap = [
-                        'pantai'       => ['label' => 'Pantai',        'icon' => '🏖️'],
-                        'gunung'       => ['label' => 'Gunung',        'icon' => '⛰️'],
-                        'air_terjun'   => ['label' => 'Air Terjun',    'icon' => '💧'],
-                        'danau'        => ['label' => 'Danau',         'icon' => '🏞️'],
-                        'kuliner'      => ['label' => 'Kuliner',       'icon' => '🍽️'],
-                        'pasar'        => ['label' => 'Pasar/Belanja', 'icon' => '🛍️'],
-                        'taman_wisata' => ['label' => 'Taman Wisata',  'icon' => '🌿'],
-                        'lainnya'      => ['label' => 'Lainnya',       'icon' => '📍'],
+                        'pantai'       => ['label' => __('Pantai'),        'icon' => '🏖️'],
+                        'gunung'       => ['label' => __('Gunung'),        'icon' => '⛰️'],
+                        'air_terjun'   => ['label' => __('Air Terjun'),    'icon' => '💧'],
+                        'danau'        => ['label' => __('Danau'),         'icon' => '🏞️'],
+                        'kuliner'      => ['label' => __('Kuliner'),       'icon' => '🍽️'],
+                        'pasar'        => ['label' => __('Pasar/Belanja'), 'icon' => '🛍️'],
+                        'taman_wisata' => ['label' => __('Taman Wisata'),  'icon' => '🌿'],
+                        'lainnya'      => ['label' => __('Lainnya'),       'icon' => '📍'],
                     ];
                     $sorted = collect($villa->nearby_destinations)->sortBy('distance')->values();
                 @endphp
                 <div class="bg-white border border-gray-100 rounded-2xl p-5 sm:p-6 shadow-sm">
-                    <h2 class="font-semibold text-gray-800 text-sm sm:text-base mb-4">Destinasi Terdekat</h2>
+                    <h2 class="font-semibold text-gray-800 text-sm sm:text-base mb-4">{{ __('Destinasi Terdekat') }}</h2>
                     <div class="divide-y divide-gray-50">
                         @foreach($sorted as $dest)
                             @php $cat = $categoryMap[$dest['category'] ?? 'lainnya'] ?? $categoryMap['lainnya']; @endphp
@@ -411,10 +411,10 @@ new #[Layout('layouts.app')] class extends Component
                     <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3.5">
                         <div class="flex items-center gap-2">
                             <span class="text-lg sm:text-xl">📜</span>
-                            <h2 class="font-semibold text-amber-900 text-sm sm:text-base">Peraturan Khusus Villa Ini</h2>
+                            <h2 class="font-semibold text-amber-900 text-sm sm:text-base">{{ __('Peraturan Khusus Villa Ini') }}</h2>
                         </div>
                         <span class="self-start sm:self-auto text-[11px] sm:text-xs font-medium text-amber-800 bg-amber-100/90 px-2.5 py-0.5 rounded-full border border-amber-200/70 shrink-0">
-                            Ketentuan Pemilik
+                            {{ __('Ketentuan Pemilik') }}
                         </span>
                     </div>
                     <div class="space-y-2 sm:space-y-2.5">
@@ -423,7 +423,7 @@ new #[Layout('layouts.app')] class extends Component
                                 <svg class="w-4 h-4 text-amber-600 mt-0.5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
                                 </svg>
-                                <span class="leading-relaxed">{{ $rule }}</span>
+                                <span class="leading-relaxed">{{ __($rule) }}</span>
                             </div>
                         @endforeach
                     </div>
@@ -437,10 +437,10 @@ new #[Layout('layouts.app')] class extends Component
                         <svg class="w-5 h-5 text-[#3a6484] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>
-                        <h2 class="font-semibold text-gray-800 text-sm sm:text-base">Syarat & Ketentuan Pemesanan</h2>
+                        <h2 class="font-semibold text-gray-800 text-sm sm:text-base">{{ __('Syarat & Ketentuan Pemesanan') }}</h2>
                     </div>
                     <span class="self-start sm:self-auto text-[11px] sm:text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-0.5 rounded-full shrink-0">
-                        Kebijakan Menginap
+                        {{ __('Kebijakan Menginap') }}
                     </span>
                 </div>
 
@@ -449,52 +449,24 @@ new #[Layout('layouts.app')] class extends Component
                         <div class="bg-blue-50/70 border border-blue-100/60 rounded-xl p-3.5 flex items-start gap-3">
                             <span class="text-xl leading-none">🕒</span>
                             <div>
-                                <p class="text-xs font-semibold text-gray-800">Check-in & Check-out</p>
-                                <p class="text-xs text-gray-600 mt-0.5">Check-in: 14.00 WIB | Check-out: 12.00 WIB</p>
+                                <p class="text-xs font-semibold text-gray-800">{{ __('Check-in & Check-out') }}</p>
+                                <p class="text-xs text-gray-600 mt-0.5">{{ __('Check-in: 14.00 WIB | Check-out: 12.00 WIB') }}</p>
                             </div>
                         </div>
                         <div class="bg-purple-50/70 border border-purple-100/60 rounded-xl p-3.5 flex items-start gap-3">
                             <span class="text-xl leading-none">👥</span>
                             <div>
-                                <p class="text-xs font-semibold text-gray-800">Kapasitas Maksimal</p>
-                                <p class="text-xs text-gray-600 mt-0.5">Maks. {{ $villa->capacity }} orang (dewasa + anak-anak)</p>
+                                <p class="text-xs font-semibold text-gray-800">{{ __('Kapasitas Maksimal') }}</p>
+                                <p class="text-xs text-gray-600 mt-0.5">{{ __('Maks.') }} {{ $villa->capacity }} {{ __('orang (dewasa + anak-anak)') }}</p>
                             </div>
                         </div>
                     </div>
 
                     <ul class="space-y-2 text-xs text-gray-600 list-disc list-inside leading-relaxed pl-1">
-                        <li>Pemesanan membutuhkan konfirmasi ketersediaan oleh admin terlebih dahulu (status <strong class="text-orange-600 font-medium">waiting_admin</strong>).</li>
-                        <li>Setelah disetujui, bukti transfer bank wajib diunggah untuk verifikasi administrasi.</li>
-                        <li>Permintaan perubahan tanggal (*reschedule*) dapat diajukan maksimal 7 hari sebelum check-in.</li>
-                        <li>Tamu wajib menjaga kebersihan, ketertiban, serta fasilitas villa selama menginap.</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-
-                <div class="space-y-4 text-sm text-gray-600">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div class="bg-blue-50/70 border border-blue-100/60 rounded-xl p-3.5 flex items-start gap-3">
-                            <span class="text-xl leading-none">🕒</span>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-800">Check-in & Check-out</p>
-                                <p class="text-xs text-gray-600 mt-0.5">Check-in: 14.00 WIB | Check-out: 12.00 WIB</p>
-                            </div>
-                        </div>
-                        <div class="bg-purple-50/70 border border-purple-100/60 rounded-xl p-3.5 flex items-start gap-3">
-                            <span class="text-xl leading-none">👥</span>
-                            <div>
-                                <p class="text-xs font-semibold text-gray-800">Kapasitas Maksimal</p>
-                                <p class="text-xs text-gray-600 mt-0.5">Maks. {{ $villa->capacity }} orang (dewasa + anak-anak)</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <ul class="space-y-2 text-xs text-gray-600 list-disc list-inside leading-relaxed">
-                        <li>Pemesanan membutuhkan konfirmasi ketersediaan oleh admin terlebih dahulu (status <strong class="text-orange-600 font-medium">waiting_admin</strong>).</li>
-                        <li>Setelah disetujui, bukti transfer bank wajib diunggah untuk verifikasi administrasi.</li>
-                        <li>Permintaan perubahan tanggal (*reschedule*) dapat diajukan maksimal 7 hari sebelum check-in.</li>
-                        <li>Tamu wajib menjaga kebersihan, ketertiban, serta fasilitas villa selama menginap.</li>
+                        <li>{{ __('Pemesanan membutuhkan konfirmasi ketersediaan oleh admin terlebih dahulu (status waiting approval).') }}</li>
+                        <li>{{ __('Setelah disetujui, bukti transfer bank diunggah untuk verifikasi administrasi.') }}</li>
+                        <li>{{ __('Permintaan perubahan tanggal (*reschedule*) dapat diajukan maksimal 7 hari sebelum check-in.') }}</li>
+                        <li>{{ __('Tamu wajib menjaga kebersihan, ketertiban, serta fasilitas villa selama menginap.') }}</li>
                     </ul>
                 </div>
             </div>
@@ -504,13 +476,13 @@ new #[Layout('layouts.app')] class extends Component
         <div class="lg:col-span-1">
             <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg sticky top-24">
                 <div class="mb-5">
-                    <p class="text-xs text-gray-400 mb-0.5">Mulai dari</p>
+                    <p class="text-xs text-gray-400 mb-0.5">{{ __('Mulai dari') }}</p>
                     <span class="text-2xl font-bold text-[#3a6484]">
                         Rp {{ number_format($villa->starting_price, 0, ',', '.') }}
                     </span>
-                    <span class="text-gray-400 text-sm"> / malam</span>
+                    <span class="text-gray-400 text-sm"> {{ __('/ malam') }}</span>
                     <p class="text-xs text-gray-400 mt-1">
-                        Weekday Rp {{ number_format($villa->weekday_price, 0, ',', '.') }} · Weekend (Jum-Sab) Rp {{ number_format($villa->weekend_price, 0, ',', '.') }}
+                        {{ __('Weekday') }} Rp {{ number_format($villa->weekday_price, 0, ',', '.') }} · {{ __('Weekend (Jum-Sab)') }} Rp {{ number_format($villa->weekend_price, 0, ',', '.') }}
                     </p>
                 </div>
 
@@ -520,12 +492,12 @@ new #[Layout('layouts.app')] class extends Component
                         <svg class="w-10 h-10 text-green-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
-                        <p class="text-green-700 font-semibold text-sm">Pemesanan berhasil diajukan!</p>
+                        <p class="text-green-700 font-semibold text-sm">{{ __('Pemesanan berhasil diajukan!') }}</p>
 
-                        <p class="text-xs text-gray-600">Silakan salin kode booking berikut dan simpan baik-baik:</p>
+                        <p class="text-xs text-gray-600">{{ __('Silakan salin kode booking berikut dan simpan baik-baik:') }}</p>
 
                         <div x-data="{ copied: false }" class="bg-white border border-green-200 rounded-xl py-3 px-4">
-                            <p class="text-xs text-gray-400 mb-1">Kode Booking</p>
+                            <p class="text-xs text-gray-400 mb-1">{{ __('Kode Booking') }}</p>
                             <p class="text-2xl font-bold text-[#3a6484] tracking-widest mb-3">{{ $bookingCode }}</p>
                             <button type="button"
                                 @click="navigator.clipboard.writeText('{{ $bookingCode }}'); copied = true; setTimeout(() => copied = false, 2000)"
@@ -537,25 +509,25 @@ new #[Layout('layouts.app')] class extends Component
                                 <svg x-show="copied" class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                 </svg>
-                                <span x-text="copied ? 'Tersalin!' : 'Salin Kode'"></span>
+                                <span x-text="copied ? '{{ __('Tersalin!') }}' : '{{ __('Salin Kode') }}'"></span>
                             </button>
                         </div>
 
                         <p class="text-xs text-gray-500 leading-relaxed">
-                            Buka halaman <span class="font-medium text-[#3a6484]">Cek Pesanan</span> dan masukkan kode ini untuk memantau status, upload bukti bayar, dan download invoice.
+                            {{ __('Buka halaman') }} <span class="font-medium text-[#3a6484]">{{ __('Cek Pesanan') }}</span> {{ __('dan masukkan kode ini untuk memantau status, upload bukti bayar, dan download invoice.') }}
                         </p>
                     </div>
                 @else
                     <form wire:submit="ajukanPemesanan" class="space-y-3">
                         <div class="grid grid-cols-2 gap-2">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Check-in</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Check-in') }}</label>
                                 <input wire:model.live="check_in" type="date" min="{{ date('Y-m-d') }}"
                                     class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3a6484]/30 focus:border-[#3a6484]" />
                                 @error('check_in') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Check-out</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">{{ __('Check-out') }}</label>
                                 <input wire:model.live="check_out" type="date" min="{{ $check_in ?: date('Y-m-d') }}"
                                     class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3a6484]/30 focus:border-[#3a6484]" />
                                 @error('check_out') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
@@ -564,7 +536,7 @@ new #[Layout('layouts.app')] class extends Component
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">
-                                Jumlah Tamu (maks. {{ $villa->capacity }})
+                                {{ __('Jumlah Tamu') }} ({{ __('maks.') }} {{ $villa->capacity }})
                             </label>
                             <input wire:model="guests" type="number" min="1" max="{{ $villa->capacity }}"
                                 class="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#3a6484]/30 focus:border-[#3a6484]" />
@@ -575,12 +547,12 @@ new #[Layout('layouts.app')] class extends Component
                             <div class="bg-gray-50 rounded-xl p-4 space-y-2 text-sm">
                                 @foreach($this->priceBreakdown as $group)
                                     <div class="flex justify-between text-gray-600">
-                                        <span>Rp {{ number_format($group['price'], 0, ',', '.') }} ({{ $group['label'] }}) × {{ $group['nights'] }} malam</span>
+                                        <span>Rp {{ number_format($group['price'], 0, ',', '.') }} ({{ __($group['label']) }}) × {{ $group['nights'] }} {{ __('malam') }}</span>
                                         <span>Rp {{ number_format($group['price'] * $group['nights'], 0, ',', '.') }}</span>
                                     </div>
                                 @endforeach
                                 <div class="flex justify-between font-semibold text-gray-800 pt-2 border-t border-gray-200">
-                                    <span>Total</span>
+                                    <span>{{ __('Total') }}</span>
                                     <span class="text-[#3a6484]">Rp {{ number_format($this->totalPrice, 0, ',', '.') }}</span>
                                 </div>
                             </div>
@@ -588,11 +560,11 @@ new #[Layout('layouts.app')] class extends Component
 
                         <button type="submit"
                             class="w-full py-3 bg-[#3a6484] text-white rounded-xl font-medium hover:bg-[#2f5370] transition">
-                            Ajukan Pemesanan
+                            {{ __('Ajukan Pemesanan') }}
                         </button>
                         <p class="text-center text-xs text-gray-400">
-                            Pesanan akan dikonfirmasi oleh admin terlebih dahulu.<br>
-                            Silahkan Cek <a href="{{ route('syarat-ketentuan') }}" wire:navigate class="underline text-[#3a6484] hover:text-[#2f5370]">Syarat & Ketentuan</a> kami sebelum pemesanan.
+                            {{ __('Pesanan akan dikonfirmasi oleh admin terlebih dahulu.') }}<br>
+                            {{ __('Silahkan Cek') }} <a href="{{ route('syarat-ketentuan') }}" wire:navigate class="underline text-[#3a6484] hover:text-[#2f5370]">{{ __('Syarat & Ketentuan') }}</a> {{ __('kami sebelum pemesanan.') }}
                         </p>
                     </form>
                 @endif

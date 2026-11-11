@@ -9,49 +9,61 @@
     </head>
     <body class="font-sans antialiased bg-white text-gray-800">
 
-        {{-- Floating Glassmorphic Pill Navbar --}}
-        <header class="fixed top-3 sm:top-5 inset-x-0 mx-auto w-[92%] sm:w-[88%] max-w-3xl z-50 transition-all duration-300">
-            <div class="relative bg-[#0f2232]/85 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between">
-                {{-- Logo & Brand --}}
-                <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2.5 shrink-0 group">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover ring-1 ring-white/20 group-hover:ring-white/40 transition">
-                    <span class="text-white font-semibold text-sm sm:text-base tracking-tight">Boboin Villa</span>
+        {{-- Header Bar dengan Capsule Dock ("Navbar di dalam Navbar") ala Portofolio Farrel --}}
+        <header id="main-header"
+                class="fixed top-0 inset-x-0 z-50 transition-all duration-300 px-4 sm:px-8 md:px-12 backdrop-blur-2xl bg-white/85 border-b border-black/5 py-3 sm:py-3.5 shadow-sm shadow-black/[0.03]">
+            <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
+                {{-- Left: Brand Logo & Title (seperti [F] FARREL.) --}}
+                <a href="{{ route('home') }}" wire:navigate class="group flex items-center gap-2.5 text-lg sm:text-xl font-black tracking-widest text-slate-900 shrink-0">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="h-7 w-7 rounded-md object-cover ring-1 ring-black/10 shadow-sm">
+                    <span class="tracking-widest">BOBOIN VILLA.</span>
                 </a>
 
-                {{-- Nav Desktop --}}
-                <nav class="hidden md:flex items-center gap-1 sm:gap-2">
+                {{-- Center: "Navbar di dalam Navbar" (Inner Capsule Dock) --}}
+                <nav aria-label="Main Navigation" class="hidden md:flex items-center gap-1 rounded-full border border-black/10 bg-black/[0.04] p-1 backdrop-blur-xl shadow-inner mx-auto">
+                    {{-- BERANDA --}}
+                    <a href="{{ route('home') }}" wire:navigate
+                       class="relative px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider transition-colors duration-200 uppercase {{ request()->routeIs('home') ? 'liquid-glass-pill text-slate-900 font-black' : 'text-slate-600 hover:text-slate-900' }}">
+                        <span>{{ __('Beranda') }}</span>
+                    </a>
+
+                    {{-- CARI VILLA --}}
                     <a href="{{ route('villas.index') }}" wire:navigate
-                       class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 {{ request()->routeIs('villas.*') ? 'bg-white/15 text-white shadow-sm' : 'text-neutral-200 hover:text-white hover:bg-white/10' }}">
-                        {{ __('Cari Villa') }}
+                       class="relative px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider transition-colors duration-200 uppercase {{ request()->routeIs('villas.*') ? 'liquid-glass-pill text-slate-900 font-black' : 'text-slate-600 hover:text-slate-900' }}">
+                        <span>{{ __('Cari Villa') }}</span>
                     </a>
+
+                    {{-- CEK PESANAN --}}
                     <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
-                       class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 {{ request()->routeIs('guest.cek-pesanan') ? 'bg-white/15 text-white shadow-sm' : 'text-neutral-200 hover:text-white hover:bg-white/10' }}">
-                        {{ __('Cek Pesanan') }}
+                       class="relative px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider transition-colors duration-200 uppercase {{ request()->routeIs('guest.cek-pesanan') ? 'liquid-glass-pill text-slate-900 font-black' : 'text-slate-600 hover:text-slate-900' }}">
+                        <span>{{ __('Cek Pesanan') }}</span>
                     </a>
+                </nav>
+
+                {{-- Right: Controls --}}
+                <div class="hidden md:flex items-center gap-3 shrink-0">
                     @auth
                         @if(auth()->user()->hasRole('admin'))
                             <a href="{{ route('admin.dashboard') }}" wire:navigate
-                               class="px-3.5 py-1.5 bg-white text-[#0f2232] rounded-full text-xs sm:text-sm font-semibold hover:bg-neutral-100 transition shadow-sm">
+                               class="px-3.5 py-1.5 bg-slate-900 text-white rounded-full text-[11px] font-bold uppercase tracking-wider hover:bg-slate-800 transition shadow-sm">
                                 {{ __('Dashboard Admin') }}
                             </a>
                         @endif
                     @endauth
-
-                    <div class="h-4 w-px bg-white/20 mx-1"></div>
                     <x-language-switch />
-                </nav>
+                </div>
 
-                {{-- Kontrol Mobile (Switch Language + Hamburger) --}}
+                {{-- Mobile Controls --}}
                 <div class="md:hidden flex items-center gap-2">
                     <x-language-switch />
                     <button id="mobile-menu-btn"
                             type="button"
-                            class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition focus:outline-none"
+                            class="p-2 rounded-lg text-slate-700 hover:bg-black/5 transition focus:outline-none"
                             aria-label="Menu">
-                        <svg id="icon-open" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
-                        <svg id="icon-close" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                     </button>
@@ -59,20 +71,24 @@
             </div>
 
             {{-- Mobile Dropdown Menu --}}
-            <div id="mobile-menu" class="hidden md:hidden mt-2 bg-[#0f2232]/95 backdrop-blur-2xl border border-white/15 rounded-3xl p-3 shadow-2xl shadow-black/50 transition-all">
-                <nav class="flex flex-col gap-1">
+            <div id="mobile-menu" class="hidden md:hidden mt-3 pt-3 border-t border-black/5 transition-all">
+                <nav class="flex flex-col gap-1.5 p-1">
+                    <a href="{{ route('home') }}" wire:navigate
+                       class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition {{ request()->routeIs('home') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-black/5' }}">
+                        {{ __('Beranda') }}
+                    </a>
                     <a href="{{ route('villas.index') }}" wire:navigate
-                       class="px-4 py-2.5 rounded-2xl text-sm font-medium transition {{ request()->routeIs('villas.*') ? 'bg-white/15 text-white' : 'text-neutral-200 hover:text-white hover:bg-white/10' }}">
+                       class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition {{ request()->routeIs('villas.*') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-black/5' }}">
                         {{ __('Cari Villa') }}
                     </a>
                     <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
-                       class="px-4 py-2.5 rounded-2xl text-sm font-medium transition {{ request()->routeIs('guest.cek-pesanan') ? 'bg-white/15 text-white' : 'text-neutral-200 hover:text-white hover:bg-white/10' }}">
+                       class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition {{ request()->routeIs('guest.cek-pesanan') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-black/5' }}">
                         {{ __('Cek Pesanan') }}
                     </a>
                     @auth
                         @if(auth()->user()->hasRole('admin'))
                             <a href="{{ route('admin.dashboard') }}" wire:navigate
-                               class="px-4 py-2.5 rounded-2xl text-sm font-semibold bg-white text-[#0f2232] hover:bg-neutral-100 transition mt-1 text-center">
+                               class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-slate-900 text-white mt-1 text-center">
                                 {{ __('Dashboard Admin') }}
                             </a>
                         @endif
@@ -82,7 +98,7 @@
         </header>
 
         {{-- Content --}}
-        <main class="{{ request()->routeIs('home') ? '' : 'pt-24 sm:pt-28' }}">
+        <main class="{{ request()->routeIs('home') ? '' : 'pt-20 sm:pt-24' }}">
             {{ $slot }}
         </main>
 

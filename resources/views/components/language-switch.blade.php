@@ -2,42 +2,15 @@
     $currentLocale = app()->getLocale();
 @endphp
 
-<div x-data="{
-        locale: '{{ $currentLocale }}',
-        toggle() {
-            const next = this.locale === 'id' ? 'en' : 'id';
-            this.setLang(next);
-        },
-        setLang(target) {
-            if (this.locale === target) return;
-            this.locale = target;
-            window.location.href = '{{ url('/lang') }}/' + target;
-        }
-    }"
-    @click="toggle()"
-    class="relative inline-flex items-center bg-black/30 border border-white/15 rounded-full p-0.5 sm:p-1 h-7 sm:h-8 select-none cursor-pointer shadow-inner hover:border-white/30 transition-colors"
-    title="Ganti Bahasa / Switch Language"
-    role="button"
-    aria-label="Switch Language ID/EN">
-
-    {{-- White sliding pill indicator --}}
-    <div class="absolute left-0.5 sm:left-1 top-0.5 sm:top-1 h-6 w-8 sm:w-9 bg-white rounded-full shadow-md transition-transform duration-300 ease-out pointer-events-none"
-         :class="locale === 'en' ? 'translate-x-8 sm:translate-x-9' : 'translate-x-0'">
-    </div>
-
-    {{-- ID Option --}}
-    <button type="button"
-            @click.stop="setLang('id')"
-            class="relative z-10 w-8 sm:w-9 h-6 flex items-center justify-center text-[11px] sm:text-xs font-bold transition-colors duration-200 tracking-wider"
-            :class="locale === 'id' ? 'text-black font-extrabold' : 'text-neutral-400 hover:text-neutral-200'">
+<div class="inline-flex items-center rounded-full border border-black/10 bg-black/[0.04] p-0.5 text-xs font-mono font-bold backdrop-blur-md">
+    <a href="{{ url('/lang/id') }}"
+       class="rounded-full px-2.5 py-1 text-[11px] font-bold transition-all duration-200 {{ $currentLocale === 'id' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900' }}"
+       title="Bahasa Indonesia">
         ID
-    </button>
-
-    {{-- EN Option --}}
-    <button type="button"
-            @click.stop="setLang('en')"
-            class="relative z-10 w-8 sm:w-9 h-6 flex items-center justify-center text-[11px] sm:text-xs font-bold transition-colors duration-200 tracking-wider"
-            :class="locale === 'en' ? 'text-black font-extrabold' : 'text-neutral-400 hover:text-neutral-200'">
+    </a>
+    <a href="{{ url('/lang/en') }}"
+       class="rounded-full px-2.5 py-1 text-[11px] font-bold transition-all duration-200 {{ $currentLocale === 'en' ? 'bg-slate-900 text-white shadow-sm' : 'text-slate-600 hover:text-slate-900' }}"
+       title="English">
         EN
-    </button>
+    </a>
 </div>

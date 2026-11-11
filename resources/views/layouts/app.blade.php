@@ -9,74 +9,80 @@
     </head>
     <body class="font-sans antialiased bg-white text-gray-800">
 
-        {{-- Header --}}
-        <header class="bg-white shadow-sm sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="relative flex items-center h-16">
-                    {{-- Logo --}}
-                    <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2 shrink-0 z-10">
-                        <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="h-14 w-auto">
-                        <span class="hidden md:inline text-[#3a6484] font-bold text-lg">Boboin Villa</span>
+        {{-- Floating Glassmorphic Pill Navbar --}}
+        <header class="fixed top-3 sm:top-5 inset-x-0 mx-auto w-[92%] sm:w-[88%] max-w-5xl z-50 transition-all duration-300">
+            <div class="relative bg-neutral-900/80 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/30 rounded-full px-3.5 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between">
+                {{-- Logo & Brand --}}
+                <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2.5 shrink-0 group">
+                    <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover ring-1 ring-white/20 group-hover:ring-white/40 transition">
+                    <span class="text-white font-semibold text-sm sm:text-base tracking-tight">Boboin Villa</span>
+                </a>
+
+                {{-- Nav Desktop --}}
+                <nav class="hidden md:flex items-center gap-1 sm:gap-2">
+                    <a href="{{ route('villas.index') }}" wire:navigate
+                       class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 {{ request()->routeIs('villas.*') ? 'bg-white/15 text-white shadow-sm' : 'text-neutral-300 hover:text-white hover:bg-white/10' }}">
+                        {{ __('Cari Villa') }}
                     </a>
-                    {{-- Teks tengah — hanya di mobile --}}
-                    <a href="{{ route('home') }}" wire:navigate
-                       class="md:hidden absolute left-1/2 -translate-x-1/2 text-[#3a6484] font-bold text-lg">
-                        Boboin Villa
+                    <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
+                       class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 {{ request()->routeIs('guest.cek-pesanan') ? 'bg-white/15 text-white shadow-sm' : 'text-neutral-300 hover:text-white hover:bg-white/10' }}">
+                        {{ __('Cek Pesanan') }}
                     </a>
+                    @auth
+                        @if(auth()->user()->hasRole('admin'))
+                            <a href="{{ route('admin.dashboard') }}" wire:navigate
+                               class="px-3.5 py-1.5 bg-white text-neutral-900 rounded-full text-xs sm:text-sm font-semibold hover:bg-neutral-100 transition shadow-sm">
+                                {{ __('Dashboard Admin') }}
+                            </a>
+                        @endif
+                    @endauth
 
-                    {{-- Nav desktop --}}
-                    <nav class="hidden md:flex items-center gap-6 ml-auto">
-                        <a href="{{ route('villas.index') }}" wire:navigate
-                           class="text-[#3a6484] hover:text-[#2f5370] transition text-sm font-medium">
-                            {{ __('Cari Villa') }}
-                        </a>
-                        <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
-                           class="text-[#3a6484] hover:text-[#2f5370] transition text-sm font-medium">
-                            {{ __('Cek Pesanan') }}
-                        </a>
-                        @auth
-                            @if(auth()->user()->hasRole('admin'))
-                                <a href="{{ route('admin.dashboard') }}" wire:navigate
-                                   class="px-4 py-2 bg-[#3a6484] text-white rounded-lg text-sm font-medium hover:bg-[#2f5370] transition">
-                                    {{ __('Dashboard Admin') }}
-                                </a>
-                            @endif
-                        @endauth
-                        {{-- Language Switcher ID/EN --}}
-                        <x-language-switch />
-                    </nav>
+                    <div class="h-4 w-px bg-white/20 mx-1"></div>
+                    <x-language-switch />
+                </nav>
 
-                    {{-- Kontrol Mobile (Switch Language + Hamburger) --}}
-                    <div class="md:hidden flex items-center gap-2 ml-auto z-10">
-                        <x-language-switch />
-                        <button id="mobile-menu-btn" class="p-2 text-[#3a6484]" aria-label="Menu">
-                            <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                            </svg>
-                            <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                            </svg>
-                        </button>
-                    </div>
+                {{-- Kontrol Mobile (Switch Language + Hamburger) --}}
+                <div class="md:hidden flex items-center gap-2">
+                    <x-language-switch />
+                    <button id="mobile-menu-btn"
+                            type="button"
+                            class="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition focus:outline-none"
+                            aria-label="Menu">
+                        <svg id="icon-open" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                        <svg id="icon-close" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
                 </div>
+            </div>
 
-                {{-- Mobile menu --}}
-                <div id="mobile-menu" class="hidden md:hidden border-t border-[#3a6484]/20 py-4">
-                    <nav class="flex flex-col gap-3">
-                        <a href="{{ route('villas.index') }}" wire:navigate class="text-[#3a6484] text-sm font-medium py-2">{{ __('Cari Villa') }}</a>
-                        <a href="{{ route('guest.cek-pesanan') }}" wire:navigate class="text-[#3a6484] text-sm font-medium py-2">{{ __('Cek Pesanan') }}</a>
-                        @auth
-                            @if(auth()->user()->hasRole('admin'))
-                                <a href="{{ route('admin.dashboard') }}" wire:navigate class="text-[#3a6484] text-sm font-medium py-2">{{ __('Dashboard Admin') }}</a>
-                            @endif
-                        @endauth
-                    </nav>
-                </div>
+            {{-- Mobile Dropdown Menu --}}
+            <div id="mobile-menu" class="hidden md:hidden mt-2 bg-neutral-900/90 backdrop-blur-2xl border border-white/15 rounded-3xl p-3 shadow-2xl shadow-black/50 transition-all">
+                <nav class="flex flex-col gap-1">
+                    <a href="{{ route('villas.index') }}" wire:navigate
+                       class="px-4 py-2.5 rounded-2xl text-sm font-medium transition {{ request()->routeIs('villas.*') ? 'bg-white/15 text-white' : 'text-neutral-300 hover:text-white hover:bg-white/10' }}">
+                        {{ __('Cari Villa') }}
+                    </a>
+                    <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
+                       class="px-4 py-2.5 rounded-2xl text-sm font-medium transition {{ request()->routeIs('guest.cek-pesanan') ? 'bg-white/15 text-white' : 'text-neutral-300 hover:text-white hover:bg-white/10' }}">
+                        {{ __('Cek Pesanan') }}
+                    </a>
+                    @auth
+                        @if(auth()->user()->hasRole('admin'))
+                            <a href="{{ route('admin.dashboard') }}" wire:navigate
+                               class="px-4 py-2.5 rounded-2xl text-sm font-semibold bg-white text-neutral-900 hover:bg-neutral-100 transition mt-1 text-center">
+                                {{ __('Dashboard Admin') }}
+                            </a>
+                        @endif
+                    @endauth
+                </nav>
             </div>
         </header>
 
         {{-- Content --}}
-        <main>
+        <main class="{{ request()->routeIs('home') ? '' : 'pt-24 sm:pt-28' }}">
             {{ $slot }}
         </main>
 
@@ -145,12 +151,29 @@
                 const menu = document.getElementById('mobile-menu');
                 const iconOpen = document.getElementById('icon-open');
                 const iconClose = document.getElementById('icon-close');
-                if (!btn) return;
-                btn.onclick = () => {
-                    menu.classList.toggle('hidden');
-                    iconOpen.classList.toggle('hidden');
-                    iconClose.classList.toggle('hidden');
+                if (!btn || !menu) return;
+
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    const isOpen = !menu.classList.contains('hidden');
+                    if (isOpen) {
+                        menu.classList.add('hidden');
+                        iconOpen?.classList.remove('hidden');
+                        iconClose?.classList.add('hidden');
+                    } else {
+                        menu.classList.remove('hidden');
+                        iconOpen?.classList.add('hidden');
+                        iconClose?.classList.remove('hidden');
+                    }
                 };
+
+                document.addEventListener('click', (e) => {
+                    if (!menu.contains(e.target) && !btn.contains(e.target)) {
+                        menu.classList.add('hidden');
+                        iconOpen?.classList.remove('hidden');
+                        iconClose?.classList.add('hidden');
+                    }
+                });
             }
             initMobileMenu();
             document.addEventListener('livewire:navigated', initMobileMenu);

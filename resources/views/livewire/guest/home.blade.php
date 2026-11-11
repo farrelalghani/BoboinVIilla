@@ -43,7 +43,7 @@ new #[Layout('layouts.app')] class extends Component
             <div class="absolute inset-0 bg-[#1a3a52]/70"></div>
         </div>
 
-        <div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+        <div class="relative w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 sm:pt-36 pb-16 sm:pb-20 text-center">
             <h1 class="text-white text-3xl sm:text-4xl lg:text-5xl font-medium mb-4 leading-snug">
                 {{ __($heroTitle) }}
             </h1>

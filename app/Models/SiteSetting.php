@@ -13,8 +13,12 @@ class SiteSetting extends Model
      */
     public static function get(string $key, ?string $default = null): ?string
     {
-        $setting = static::where('key', $key)->first();
-        return $setting && !is_null($setting->value) && $setting->value !== '' ? $setting->value : $default;
+        try {
+            $setting = static::where('key', $key)->first();
+            return $setting && !is_null($setting->value) && $setting->value !== '' ? $setting->value : $default;
+        } catch (\Throwable $e) {
+            return $default;
+        }
     }
 
     /**

@@ -26,3 +26,5 @@ Thumbs.db
 *.zip
 /bootstrap/cache/*.php
 /bootstrap/cache/*.tmp
+
+CLAUDE.md

@@ -15,7 +15,7 @@
         }
     }"
     @click="toggle()"
-    class="relative inline-flex items-center bg-[#17191e] border border-neutral-700/60 rounded-full p-0.5 sm:p-1 h-7 sm:h-8 select-none cursor-pointer shadow-inner hover:border-neutral-500 transition-colors"
+    class="relative inline-flex items-center bg-black/30 border border-white/15 rounded-full p-0.5 sm:p-1 h-7 sm:h-8 select-none cursor-pointer shadow-inner hover:border-white/30 transition-colors"
     title="Ganti Bahasa / Switch Language"
     role="button"
     aria-label="Switch Language ID/EN">

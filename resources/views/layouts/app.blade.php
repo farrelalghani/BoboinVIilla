@@ -10,8 +10,8 @@
     <body class="font-sans antialiased bg-white text-gray-800">
 
         {{-- Floating Glassmorphic Pill Navbar --}}
-        <header class="fixed top-3 sm:top-5 inset-x-0 mx-auto w-[92%] sm:w-[88%] max-w-5xl z-50 transition-all duration-300">
-            <div class="relative bg-neutral-900/80 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/30 rounded-full px-3.5 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between">
+        <header class="fixed top-3 sm:top-5 inset-x-0 mx-auto w-[92%] sm:w-[88%] max-w-3xl z-50 transition-all duration-300">
+            <div class="relative bg-[#0f2232]/85 backdrop-blur-xl border border-white/15 shadow-2xl shadow-black/40 rounded-full px-4 sm:px-6 py-2 sm:py-2.5 flex items-center justify-between">
                 {{-- Logo & Brand --}}
                 <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2.5 shrink-0 group">
                     <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="h-8 w-8 sm:h-9 sm:w-9 rounded-full object-cover ring-1 ring-white/20 group-hover:ring-white/40 transition">
@@ -21,17 +21,17 @@
                 {{-- Nav Desktop --}}
                 <nav class="hidden md:flex items-center gap-1 sm:gap-2">
                     <a href="{{ route('villas.index') }}" wire:navigate
-                       class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 {{ request()->routeIs('villas.*') ? 'bg-white/15 text-white shadow-sm' : 'text-neutral-300 hover:text-white hover:bg-white/10' }}">
+                       class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 {{ request()->routeIs('villas.*') ? 'bg-white/15 text-white shadow-sm' : 'text-neutral-200 hover:text-white hover:bg-white/10' }}">
                         {{ __('Cari Villa') }}
                     </a>
                     <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
-                       class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 {{ request()->routeIs('guest.cek-pesanan') ? 'bg-white/15 text-white shadow-sm' : 'text-neutral-300 hover:text-white hover:bg-white/10' }}">
+                       class="px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 {{ request()->routeIs('guest.cek-pesanan') ? 'bg-white/15 text-white shadow-sm' : 'text-neutral-200 hover:text-white hover:bg-white/10' }}">
                         {{ __('Cek Pesanan') }}
                     </a>
                     @auth
                         @if(auth()->user()->hasRole('admin'))
                             <a href="{{ route('admin.dashboard') }}" wire:navigate
-                               class="px-3.5 py-1.5 bg-white text-neutral-900 rounded-full text-xs sm:text-sm font-semibold hover:bg-neutral-100 transition shadow-sm">
+                               class="px-3.5 py-1.5 bg-white text-[#0f2232] rounded-full text-xs sm:text-sm font-semibold hover:bg-neutral-100 transition shadow-sm">
                                 {{ __('Dashboard Admin') }}
                             </a>
                         @endif
@@ -59,20 +59,20 @@
             </div>
 
             {{-- Mobile Dropdown Menu --}}
-            <div id="mobile-menu" class="hidden md:hidden mt-2 bg-neutral-900/90 backdrop-blur-2xl border border-white/15 rounded-3xl p-3 shadow-2xl shadow-black/50 transition-all">
+            <div id="mobile-menu" class="hidden md:hidden mt-2 bg-[#0f2232]/95 backdrop-blur-2xl border border-white/15 rounded-3xl p-3 shadow-2xl shadow-black/50 transition-all">
                 <nav class="flex flex-col gap-1">
                     <a href="{{ route('villas.index') }}" wire:navigate
-                       class="px-4 py-2.5 rounded-2xl text-sm font-medium transition {{ request()->routeIs('villas.*') ? 'bg-white/15 text-white' : 'text-neutral-300 hover:text-white hover:bg-white/10' }}">
+                       class="px-4 py-2.5 rounded-2xl text-sm font-medium transition {{ request()->routeIs('villas.*') ? 'bg-white/15 text-white' : 'text-neutral-200 hover:text-white hover:bg-white/10' }}">
                         {{ __('Cari Villa') }}
                     </a>
                     <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
-                       class="px-4 py-2.5 rounded-2xl text-sm font-medium transition {{ request()->routeIs('guest.cek-pesanan') ? 'bg-white/15 text-white' : 'text-neutral-300 hover:text-white hover:bg-white/10' }}">
+                       class="px-4 py-2.5 rounded-2xl text-sm font-medium transition {{ request()->routeIs('guest.cek-pesanan') ? 'bg-white/15 text-white' : 'text-neutral-200 hover:text-white hover:bg-white/10' }}">
                         {{ __('Cek Pesanan') }}
                     </a>
                     @auth
                         @if(auth()->user()->hasRole('admin'))
                             <a href="{{ route('admin.dashboard') }}" wire:navigate
-                               class="px-4 py-2.5 rounded-2xl text-sm font-semibold bg-white text-neutral-900 hover:bg-neutral-100 transition mt-1 text-center">
+                               class="px-4 py-2.5 rounded-2xl text-sm font-semibold bg-white text-[#0f2232] hover:bg-neutral-100 transition mt-1 text-center">
                                 {{ __('Dashboard Admin') }}
                             </a>
                         @endif

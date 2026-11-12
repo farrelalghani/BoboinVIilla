@@ -9,91 +9,96 @@
     </head>
     <body class="font-sans antialiased bg-white text-gray-800">
 
-        {{-- Header Bar dengan Capsule Dock ("Navbar di dalam Navbar") ala Portofolio Farrel --}}
+        {{-- Header Bar dengan Capsule Dock ("Navbar di dalam Navbar") khas Boboin Villa --}}
         <header id="main-header"
-                class="fixed top-0 inset-x-0 z-50 transition-all duration-300 px-4 sm:px-8 md:px-12 backdrop-blur-2xl bg-white/85 border-b border-black/5 py-3 sm:py-3.5 shadow-sm shadow-black/[0.03]">
-            <div class="mx-auto flex w-full max-w-7xl items-center justify-between gap-4">
-                {{-- Left: Brand Logo & Title (seperti [F] FARREL.) --}}
-                <a href="{{ route('home') }}" wire:navigate class="group flex items-center gap-2.5 text-lg sm:text-xl font-black tracking-widest text-slate-900 shrink-0">
-                    <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="h-7 w-7 rounded-md object-cover ring-1 ring-black/10 shadow-sm">
-                    <span class="tracking-widest">BOBOIN VILLA.</span>
-                </a>
-
-                {{-- Center: "Navbar di dalam Navbar" (Inner Capsule Dock) --}}
-                <nav aria-label="Main Navigation" class="hidden md:flex items-center gap-1 rounded-full border border-black/10 bg-black/[0.04] p-1 backdrop-blur-xl shadow-inner mx-auto">
-                    {{-- BERANDA --}}
-                    <a href="{{ route('home') }}" wire:navigate
-                       class="relative px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider transition-colors duration-200 uppercase {{ request()->routeIs('home') ? 'liquid-glass-pill text-slate-900 font-black' : 'text-slate-600 hover:text-slate-900' }}">
-                        <span>{{ __('Beranda') }}</span>
+                class="fixed top-0 inset-x-0 z-50 transition-all duration-300 bg-white/95 backdrop-blur-xl border-b border-[#3a6484]/15 shadow-sm">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex items-center justify-between h-16">
+                    {{-- Kiri: Brand Logo Asli & Nama Boboin Villa --}}
+                    <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2.5 shrink-0 group">
+                        <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="h-9 w-auto rounded-lg">
+                        <span class="text-[#3a6484] font-bold text-lg sm:text-xl tracking-tight">Boboin Villa</span>
                     </a>
 
-                    {{-- CARI VILLA --}}
-                    <a href="{{ route('villas.index') }}" wire:navigate
-                       class="relative px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider transition-colors duration-200 uppercase {{ request()->routeIs('villas.*') ? 'liquid-glass-pill text-slate-900 font-black' : 'text-slate-600 hover:text-slate-900' }}">
-                        <span>{{ __('Cari Villa') }}</span>
-                    </a>
-
-                    {{-- CEK PESANAN --}}
-                    <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
-                       class="relative px-4 py-1.5 rounded-full text-[11px] font-bold tracking-wider transition-colors duration-200 uppercase {{ request()->routeIs('guest.cek-pesanan') ? 'liquid-glass-pill text-slate-900 font-black' : 'text-slate-600 hover:text-slate-900' }}">
-                        <span>{{ __('Cek Pesanan') }}</span>
-                    </a>
-                </nav>
-
-                {{-- Right: Controls --}}
-                <div class="hidden md:flex items-center gap-3 shrink-0">
-                    @auth
-                        @if(auth()->user()->hasRole('admin'))
-                            <a href="{{ route('admin.dashboard') }}" wire:navigate
-                               class="px-3.5 py-1.5 bg-slate-900 text-white rounded-full text-[11px] font-bold uppercase tracking-wider hover:bg-slate-800 transition shadow-sm">
-                                {{ __('Dashboard Admin') }}
+                    {{-- Kanan: Capsule Dock Menu ("Navbar di dalam Navbar") & Kontrol --}}
+                    <div class="hidden md:flex items-center gap-3 ml-auto">
+                        {{-- Capsule Dock Menu --}}
+                        <nav aria-label="Main Navigation" class="flex items-center gap-1 rounded-full bg-[#3a6484]/[0.08] border border-[#3a6484]/20 p-1 backdrop-blur-md">
+                            {{-- Beranda --}}
+                            <a href="{{ route('home') }}" wire:navigate
+                               class="px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 {{ request()->routeIs('home') ? 'bg-[#3a6484] text-white shadow-sm shadow-[#3a6484]/25' : 'text-[#3a6484] hover:text-[#25435b] hover:bg-[#3a6484]/10' }}">
+                                {{ __('Beranda') }}
                             </a>
-                        @endif
-                    @endauth
-                    <x-language-switch />
+
+                            {{-- Cari Villa --}}
+                            <a href="{{ route('villas.index') }}" wire:navigate
+                               class="px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 {{ request()->routeIs('villas.*') ? 'bg-[#3a6484] text-white shadow-sm shadow-[#3a6484]/25' : 'text-[#3a6484] hover:text-[#25435b] hover:bg-[#3a6484]/10' }}">
+                                {{ __('Cari Villa') }}
+                            </a>
+
+                            {{-- Cek Pesanan --}}
+                            <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
+                               class="px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 {{ request()->routeIs('guest.cek-pesanan') ? 'bg-[#3a6484] text-white shadow-sm shadow-[#3a6484]/25' : 'text-[#3a6484] hover:text-[#25435b] hover:bg-[#3a6484]/10' }}">
+                                {{ __('Cek Pesanan') }}
+                            </a>
+                        </nav>
+
+                        {{-- Admin Dashboard (jika login admin) --}}
+                        @auth
+                            @if(auth()->user()->hasRole('admin'))
+                                <a href="{{ route('admin.dashboard') }}" wire:navigate
+                                   class="px-4 py-1.5 bg-[#3a6484] text-white rounded-full text-xs font-semibold hover:bg-[#2f5370] transition shadow-sm">
+                                    {{ __('Dashboard Admin') }}
+                                </a>
+                            @endif
+                        @endauth
+
+                        {{-- Language Switcher ID/EN --}}
+                        <x-language-switch />
+                    </div>
+
+                    {{-- Kontrol Mobile --}}
+                    <div class="md:hidden flex items-center gap-2 ml-auto">
+                        <x-language-switch />
+                        <button id="mobile-menu-btn"
+                                type="button"
+                                class="p-2 text-[#3a6484] hover:bg-[#3a6484]/10 rounded-lg transition focus:outline-none"
+                                aria-label="Menu">
+                            <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            </svg>
+                            <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
-                {{-- Mobile Controls --}}
-                <div class="md:hidden flex items-center gap-2">
-                    <x-language-switch />
-                    <button id="mobile-menu-btn"
-                            type="button"
-                            class="p-2 rounded-lg text-slate-700 hover:bg-black/5 transition focus:outline-none"
-                            aria-label="Menu">
-                        <svg id="icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-                        </svg>
-                        <svg id="icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
+                {{-- Mobile Dropdown Menu --}}
+                <div id="mobile-menu" class="hidden md:hidden border-t border-[#3a6484]/15 py-3">
+                    <nav class="flex flex-col gap-1.5">
+                        <a href="{{ route('home') }}" wire:navigate
+                           class="px-4 py-2 rounded-xl text-sm font-semibold transition {{ request()->routeIs('home') ? 'bg-[#3a6484] text-white' : 'text-[#3a6484] hover:bg-[#3a6484]/10' }}">
+                            {{ __('Beranda') }}
+                        </a>
+                        <a href="{{ route('villas.index') }}" wire:navigate
+                           class="px-4 py-2 rounded-xl text-sm font-semibold transition {{ request()->routeIs('villas.*') ? 'bg-[#3a6484] text-white' : 'text-[#3a6484] hover:bg-[#3a6484]/10' }}">
+                            {{ __('Cari Villa') }}
+                        </a>
+                        <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
+                           class="px-4 py-2 rounded-xl text-sm font-semibold transition {{ request()->routeIs('guest.cek-pesanan') ? 'bg-[#3a6484] text-white' : 'text-[#3a6484] hover:bg-[#3a6484]/10' }}">
+                            {{ __('Cek Pesanan') }}
+                        </a>
+                        @auth
+                            @if(auth()->user()->hasRole('admin'))
+                                <a href="{{ route('admin.dashboard') }}" wire:navigate
+                                   class="px-4 py-2 rounded-xl text-sm font-semibold bg-[#3a6484] text-white mt-1 text-center">
+                                    {{ __('Dashboard Admin') }}
+                                </a>
+                            @endif
+                        @endauth
+                    </nav>
                 </div>
-            </div>
-
-            {{-- Mobile Dropdown Menu --}}
-            <div id="mobile-menu" class="hidden md:hidden mt-3 pt-3 border-t border-black/5 transition-all">
-                <nav class="flex flex-col gap-1.5 p-1">
-                    <a href="{{ route('home') }}" wire:navigate
-                       class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition {{ request()->routeIs('home') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-black/5' }}">
-                        {{ __('Beranda') }}
-                    </a>
-                    <a href="{{ route('villas.index') }}" wire:navigate
-                       class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition {{ request()->routeIs('villas.*') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-black/5' }}">
-                        {{ __('Cari Villa') }}
-                    </a>
-                    <a href="{{ route('guest.cek-pesanan') }}" wire:navigate
-                       class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition {{ request()->routeIs('guest.cek-pesanan') ? 'bg-slate-900 text-white' : 'text-slate-700 hover:bg-black/5' }}">
-                        {{ __('Cek Pesanan') }}
-                    </a>
-                    @auth
-                        @if(auth()->user()->hasRole('admin'))
-                            <a href="{{ route('admin.dashboard') }}" wire:navigate
-                               class="px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider bg-slate-900 text-white mt-1 text-center">
-                                {{ __('Dashboard Admin') }}
-                            </a>
-                        @endif
-                    @endauth
-                </nav>
             </div>
         </header>
 

@@ -15,8 +15,8 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="flex items-center justify-between h-16">
                     {{-- Kiri: Brand Logo Asli & Nama Boboin Villa --}}
-                    <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2.5 shrink-0 group">
-                        <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="h-9 w-auto rounded-lg">
+                    <a href="{{ route('home') }}" wire:navigate class="flex items-center gap-2.5 sm:gap-3 shrink-0 group">
+                        <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="h-11 sm:h-12 w-auto rounded-lg object-contain transition-transform group-hover:scale-105">
                         <span class="text-[#3a6484] font-bold text-lg sm:text-xl tracking-tight">Boboin Villa</span>
                     </a>
 

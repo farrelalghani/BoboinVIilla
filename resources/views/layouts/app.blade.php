@@ -173,6 +173,9 @@
             </div>
         </footer>
 
+        {{-- AI Concierge Chatbot Widget (Google Gemini AI) --}}
+        <livewire:guest.ai-concierge-chat />
+
         {{-- Tombol WhatsApp mengambang — ganti nomor di bawah jika berubah --}}
         <a href="https://wa.me/6285724821667?text=Halo%20Boboin%20Villa%2C%20saya%20ingin%20bertanya%20mengenai%20pemesanan%20villa."
            target="_blank" rel="noopener"

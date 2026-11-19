@@ -34,18 +34,20 @@ new class extends Component {
         $this->mount();
     }
 
-    public function askQuickPrompt(string $prompt): void
+    public function askQuickPrompt(string $prompt, ?GeminiChatService $chatService = null): void
     {
         $this->message = $prompt;
-        $this->send();
+        $this->send($chatService);
     }
 
-    public function send(GeminiChatService $chatService): void
+    public function send(?GeminiChatService $chatService = null): void
     {
         $text = trim($this->message);
         if ($text === '') {
             return;
         }
+
+        $chatService = $chatService ?? app(GeminiChatService::class);
 
         // Simpan pesan tamu
         $this->history[] = [

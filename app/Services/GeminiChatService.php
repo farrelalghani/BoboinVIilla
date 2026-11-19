@@ -14,7 +14,7 @@ class GeminiChatService
     public function __construct()
     {
         $this->apiKey = config('services.gemini.api_key') ?: env('GEMINI_API_KEY');
-        $this->model  = config('services.gemini.model') ?: env('GEMINI_MODEL', 'gemini-1.5-flash');
+        $this->model  = config('services.gemini.model') ?: env('GEMINI_MODEL', 'gemini-flash-latest');
     }
 
     /**
@@ -35,9 +35,7 @@ class GeminiChatService
             $systemInstruction = $this->buildSystemInstruction();
             $contents = $this->formatContents($history, $userMessage);
 
-            $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$this->model}:generateContent?key={$this->apiKey}";
-
-            $response = Http::timeout(15)->post($endpoint, [
+            $payload = [
                 'system_instruction' => [
                     'parts' => [
                         ['text' => $systemInstruction],
@@ -48,23 +46,53 @@ class GeminiChatService
                     'temperature'     => 0.7,
                     'maxOutputTokens' => 700,
                 ],
-            ]);
+            ];
 
-            if ($response->successful()) {
+            // Coba model utama (default: gemini-flash-latest)
+            $response = $this->callGeminiApi($this->model, $payload);
+
+            if ($response && $response->successful()) {
                 $candidates = $response->json('candidates');
                 $text = $candidates[0]['content']['parts'][0]['text'] ?? null;
-
                 if (!empty($text)) {
                     return trim($text);
                 }
             }
 
-            Log::warning('Gemini API Non-200 Response: ' . $response->body());
+            // Fallback ke model alternatif jika model utama sibuk / unavailable
+            if ($this->model !== 'gemini-flash-lite-latest') {
+                $fallbackResponse = $this->callGeminiApi('gemini-flash-lite-latest', $payload);
+                if ($fallbackResponse && $fallbackResponse->successful()) {
+                    $candidates = $fallbackResponse->json('candidates');
+                    $text = $candidates[0]['content']['parts'][0]['text'] ?? null;
+                    if (!empty($text)) {
+                        return trim($text);
+                    }
+                }
+            }
+
+            Log::warning('Gemini API Non-200 Response: ' . ($response ? $response->body() : 'No response'));
             return $this->localFallbackReply($userMessage);
         } catch (\Throwable $e) {
             Log::error('Gemini API Error: ' . $e->getMessage());
             return $this->localFallbackReply($userMessage);
         }
+    }
+
+    /**
+     * Mengirim request HTTP ke Google Generative Language API
+     * Mendukung format API Key standar (AIza...) maupun Auth Key baru (AQ...)
+     */
+    protected function callGeminiApi(string $model, array $payload): ?\Illuminate\Http\Client\Response
+    {
+        $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$this->apiKey}";
+
+        return Http::timeout(15)
+            ->withHeaders([
+                'x-goog-api-key' => $this->apiKey,
+                'Content-Type'   => 'application/json',
+            ])
+            ->post($endpoint, $payload);
     }
 
     /**

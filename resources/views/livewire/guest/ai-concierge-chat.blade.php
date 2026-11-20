@@ -214,7 +214,9 @@ new class extends Component {
             </div>
 
             {{-- Footer Input Box --}}
-            <form wire:submit.prevent="send" class="p-3 bg-white border-t border-slate-100 flex items-center gap-2 shrink-0">
+            <form wire:submit.prevent="send"
+                  @submit="$nextTick(() => { const b = document.getElementById('ai-chat-body'); if(b) b.scrollTop = b.scrollHeight; })"
+                  class="p-3 bg-white border-t border-slate-100 flex items-center gap-2 shrink-0">
                 <input wire:model="message"
                        type="text"
                        placeholder="Ketik pertanyaan seputar villa..."
@@ -224,10 +226,18 @@ new class extends Component {
                 <button type="submit"
                         wire:loading.attr="disabled"
                         wire:target="send,askQuickPrompt"
-                        class="w-9 h-9 rounded-full bg-[#3a6484] hover:bg-[#2f5370] text-white flex items-center justify-center transition shadow-md shrink-0 disabled:opacity-50">
-                    <svg class="w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
-                    </svg>
+                        class="w-9 h-9 rounded-full bg-[#3a6484] hover:bg-[#2f5370] text-white flex items-center justify-center transition shadow-md shrink-0 disabled:opacity-60 cursor-pointer">
+                    <span wire:loading.remove wire:target="send,askQuickPrompt">
+                        <svg class="w-4 h-4 rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                        </svg>
+                    </span>
+                    <span wire:loading wire:target="send,askQuickPrompt">
+                        <svg class="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
                 </button>
             </form>
         </div>

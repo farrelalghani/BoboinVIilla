@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Villa;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -14,7 +15,7 @@ class GeminiChatService
     public function __construct()
     {
         $this->apiKey = config('services.gemini.api_key') ?: env('GEMINI_API_KEY');
-        $this->model  = config('services.gemini.model') ?: env('GEMINI_MODEL', 'gemini-flash-latest');
+        $this->model  = config('services.gemini.model') ?: env('GEMINI_MODEL', 'gemini-flash-lite-latest');
     }
 
     /**
@@ -48,7 +49,7 @@ class GeminiChatService
                 ],
             ];
 
-            // Coba model utama (default: gemini-flash-latest)
+            // Coba model utama (default ultra-fast: gemini-flash-lite-latest)
             $response = $this->callGeminiApi($this->model, $payload);
 
             if ($response && $response->successful()) {
@@ -60,14 +61,13 @@ class GeminiChatService
             }
 
             // Fallback ke model alternatif jika model utama sibuk / unavailable
-            if ($this->model !== 'gemini-flash-lite-latest') {
-                $fallbackResponse = $this->callGeminiApi('gemini-flash-lite-latest', $payload);
-                if ($fallbackResponse && $fallbackResponse->successful()) {
-                    $candidates = $fallbackResponse->json('candidates');
-                    $text = $candidates[0]['content']['parts'][0]['text'] ?? null;
-                    if (!empty($text)) {
-                        return trim($text);
-                    }
+            $fallbackModel = ($this->model === 'gemini-flash-lite-latest') ? 'gemini-flash-latest' : 'gemini-flash-lite-latest';
+            $fallbackResponse = $this->callGeminiApi($fallbackModel, $payload);
+            if ($fallbackResponse && $fallbackResponse->successful()) {
+                $candidates = $fallbackResponse->json('candidates');
+                $text = $candidates[0]['content']['parts'][0]['text'] ?? null;
+                if (!empty($text)) {
+                    return trim($text);
                 }
             }
 
@@ -87,7 +87,7 @@ class GeminiChatService
     {
         $endpoint = "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$this->apiKey}";
 
-        return Http::timeout(15)
+        return Http::timeout(7)
             ->withHeaders([
                 'x-goog-api-key' => $this->apiKey,
                 'Content-Type'   => 'application/json',
@@ -133,38 +133,40 @@ PROMPT;
      */
     protected function getVillasKnowledgeContext(): string
     {
-        try {
-            $villas = Villa::where('status', 'active')->with('peakSeasons')->get();
+        return Cache::remember('ai_villas_knowledge_context', 300, function () {
+            try {
+                $villas = Villa::where('status', 'active')->with('peakSeasons')->get();
 
-            if ($villas->isEmpty()) {
-                return "- Saat ini belum ada data villa aktif di database.";
-            }
-
-            $lines = [];
-            foreach ($villas as $villa) {
-                $facilities = is_array($villa->facilities) ? implode(', ', $villa->facilities) : '-';
-                $destinations = '-';
-                if (is_array($villa->nearby_destinations)) {
-                    $dList = array_map(function ($d) {
-                        return is_array($d) ? ($d['name'] ?? '') . ' (' . ($d['distance'] ?? '') . ')' : '';
-                    }, $villa->nearby_destinations);
-                    $destinations = implode(', ', array_filter($dList));
+                if ($villas->isEmpty()) {
+                    return "- Saat ini belum ada data villa aktif di database.";
                 }
 
-                $weekdayFmt = 'Rp ' . number_format($villa->weekday_price, 0, ',', '.');
-                $weekendFmt = 'Rp ' . number_format($villa->weekend_price, 0, ',', '.');
+                $lines = [];
+                foreach ($villas as $villa) {
+                    $facilities = is_array($villa->facilities) ? implode(', ', $villa->facilities) : '-';
+                    $destinations = '-';
+                    if (is_array($villa->nearby_destinations)) {
+                        $dList = array_map(function ($d) {
+                            return is_array($d) ? ($d['name'] ?? '') . ' (' . ($d['distance'] ?? '') . ')' : '';
+                        }, $villa->nearby_destinations);
+                        $destinations = implode(', ', array_filter($dList));
+                    }
 
-                $lines[] = "• **{$villa->name}** (Kota: {$villa->city}, Alamat: {$villa->address}):\n" .
-                           "  - Kapasitas: Hingga {$villa->capacity} orang.\n" .
-                           "  - Harga: Weekday {$weekdayFmt}/malam | Weekend {$weekendFmt}/malam.\n" .
-                           "  - Fasilitas: {$facilities}.\n" .
-                           "  - Destinasi Terdekat: {$destinations}.";
+                    $weekdayFmt = 'Rp ' . number_format($villa->weekday_price, 0, ',', '.');
+                    $weekendFmt = 'Rp ' . number_format($villa->weekend_price, 0, ',', '.');
+
+                    $lines[] = "• **{$villa->name}** (Kota: {$villa->city}, Alamat: {$villa->address}):\n" .
+                               "  - Kapasitas: Hingga {$villa->capacity} orang.\n" .
+                               "  - Harga: Weekday {$weekdayFmt}/malam | Weekend {$weekendFmt}/malam.\n" .
+                               "  - Fasilitas: {$facilities}.\n" .
+                               "  - Destinasi Terdekat: {$destinations}.";
+                }
+
+                return implode("\n\n", $lines);
+            } catch (\Throwable $e) {
+                return "- Gagal memuat data villa: " . $e->getMessage();
             }
-
-            return implode("\n\n", $lines);
-        } catch (\Throwable $e) {
-            return "- Gagal memuat data villa: " . $e->getMessage();
-        }
+        });
     }
 
     /**

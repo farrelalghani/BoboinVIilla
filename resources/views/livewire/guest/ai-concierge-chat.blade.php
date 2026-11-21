@@ -8,13 +8,18 @@ new class extends Component {
     public string $message = '';
     public array $history = [];
 
+    protected function currentTimestamp(): string
+    {
+        return now()->timezone(config('app.timezone', 'Asia/Jakarta'))->format('H:i');
+    }
+
     public function mount(): void
     {
         $this->history = [
             [
                 'role' => 'assistant',
                 'text' => "Halo! Saya **Boboin AI Concierge** ✨\nAda yang bisa saya bantu seputar rekomendasi villa, kapasitas tamu, fasilitas, atau cara pemesanan?",
-                'time' => now()->format('H:i'),
+                'time' => $this->currentTimestamp(),
             ],
         ];
     }
@@ -53,7 +58,7 @@ new class extends Component {
         $this->history[] = [
             'role' => 'user',
             'text' => $text,
-            'time' => now()->format('H:i'),
+            'time' => $this->currentTimestamp(),
         ];
 
         $this->message = '';
@@ -64,7 +69,7 @@ new class extends Component {
         $this->history[] = [
             'role' => 'assistant',
             'text' => $reply,
-            'time' => now()->format('H:i'),
+            'time' => $this->currentTimestamp(),
         ];
 
         // Trigger scroll ke bawah di sisi client
@@ -78,20 +83,15 @@ new class extends Component {
         <button wire:click="toggleChat"
                 type="button"
                 id="boboin-ai-chat-btn"
-                class="flex items-center gap-2 bg-[#3a6484] hover:bg-[#2f5370] text-white pl-3 pr-4 py-2.5 sm:py-3 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 group focus:outline-none"
+                class="flex items-center gap-2.5 bg-[#3a6484] hover:bg-[#2f5370] text-white pl-2.5 pr-4 py-2 sm:py-2.5 rounded-full shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-0.5 group focus:outline-none"
                 aria-label="Tanya AI Concierge">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-            </span>
-
-            {{-- Sparkle Icon --}}
-            <svg class="w-4 h-4 sm:w-5 sm:h-5 text-amber-300 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L14.4 7.6L20 10L14.4 12.4L12 18L9.6 12.4L4 10L9.6 7.6L12 2Z"/>
-            </svg>
+            <div class="relative w-7 h-7 rounded-full bg-white ring-2 ring-white/50 overflow-hidden shrink-0 shadow-xs">
+                <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="w-full h-full object-cover">
+                <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-500 ring-1 ring-white"></span>
+            </div>
 
             <span class="text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap">
-                Tanya AI
+                Tanya AI ✨
             </span>
         </button>
     </div>
@@ -104,10 +104,8 @@ new class extends Component {
             {{-- Header Chat --}}
             <div class="bg-gradient-to-r from-[#1a3a52] to-[#3a6484] text-white px-4 py-3.5 flex items-center justify-between shrink-0 shadow-md">
                 <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full bg-white/10 ring-1 ring-white/20 flex items-center justify-center shrink-0">
-                        <svg class="w-5 h-5 text-amber-300" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 2L14.4 7.6L20 10L14.4 12.4L12 18L9.6 12.4L4 10L9.6 7.6L12 2Z"/>
-                        </svg>
+                    <div class="w-9 h-9 rounded-full bg-white ring-2 ring-white/30 overflow-hidden flex items-center justify-center shrink-0 shadow-xs">
+                        <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="w-full h-full object-cover">
                     </div>
                     <div>
                         <div class="flex items-center gap-2">
@@ -194,7 +192,8 @@ new class extends Component {
                             <div class="bg-white text-slate-800 border border-slate-200/90 px-3.5 py-2.5 rounded-2xl rounded-tl-xs max-w-[90%] shadow-sm leading-relaxed">
                                 {!! nl2br(e($item['text'])) !!}
                             </div>
-                            <span class="text-[10px] text-slate-400 mt-1 ml-1 flex items-center gap-1">
+                            <span class="text-[10px] text-slate-400 mt-1 ml-1 flex items-center gap-1.5">
+                                <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="w-3.5 h-3.5 rounded-full object-cover ring-1 ring-slate-200">
                                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>
                                 Boboin AI • {{ $item['time'] ?? '' }}
                             </span>
@@ -204,11 +203,12 @@ new class extends Component {
 
                 {{-- Indikator Sedang Mengetik (Thinking Loading) --}}
                 <div wire:loading wire:target="send,askQuickPrompt" class="flex items-center gap-2 text-slate-500 py-1">
-                    <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-xs px-3.5 py-2 shadow-sm flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-[#3a6484] animate-bounce"></span>
-                        <span class="w-2 h-2 rounded-full bg-[#3a6484] animate-bounce [animation-delay:0.2s]"></span>
-                        <span class="w-2 h-2 rounded-full bg-[#3a6484] animate-bounce [animation-delay:0.4s]"></span>
-                        <span class="text-xs text-slate-500 ml-1">Boboin AI sedang berpikir...</span>
+                    <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-xs px-3.5 py-2 shadow-sm flex items-center gap-2">
+                        <img src="{{ asset('images/logo.jpg') }}" alt="Boboin Villa" class="w-4 h-4 rounded-full object-cover">
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#3a6484] animate-bounce"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#3a6484] animate-bounce [animation-delay:0.2s]"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-[#3a6484] animate-bounce [animation-delay:0.4s]"></span>
+                        <span class="text-xs text-slate-500 ml-0.5">Boboin AI sedang berpikir...</span>
                     </div>
                 </div>
             </div>

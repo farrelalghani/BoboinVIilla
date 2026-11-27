@@ -117,7 +117,7 @@ INFORMASI OPERASIONAL & ATURAN:
 - Pemesanan dilakukan mandiri melalui website: pilih tanggal check-in & check-out -> tentukan jumlah tamu -> ajukan pesanan.
 - Setelah memesan, tamu akan mendapatkan Kode Booking unik berformat BVL-XXXXXX.
 - Tamu dapat mengecek status pesanan atau download invoice PDF kapan saja melalui menu "Cek Pesanan" (masukkan kode booking).
-- Metode pembayaran: Transfer bank manual (upload bukti transfer) atau Payment Gateway otomatis.
+- Metode pembayaran: Transfer bank manual (tamu mengisi data diri, mentransfer ke rekening resmi Boboin Villa di halaman pembayaran, lalu mengunggah bukti transfer untuk diverifikasi admin dalam 1×24 jam).
 - Bantuan darurat / WhatsApp Admin resmi: +62 857-2482-1667.
 
 GAYA KOMUNIKASI:
@@ -228,7 +228,7 @@ PROMPT;
             }
 
             if (str_contains($lower, 'bayar') || str_contains($lower, 'transfer') || str_contains($lower, 'rekening')) {
-                return "Boboin Villa menyediakan metode pembayaran melalui **Transfer Bank Manual** (dengan mengunggah bukti struk) dan **Payment Gateway Otomatis** (Virtual Account & QRIS). Informasi rekening dan nominal lengkap akan tertera setelah Anda mengajukan booking.";
+                return "Boboin Villa menggunakan metode pembayaran **Transfer Bank Manual**. Setelah pesanan disetujui admin, informasi rekening resmi dan formulir unggah bukti transfer akan tersedia pada halaman pembayaran di menu **Cek Pesanan**.";
             }
 
             if (str_contains($lower, 'bantuan') || str_contains($lower, 'admin') || str_contains($lower, 'wa') || str_contains($lower, 'whatsapp')) {

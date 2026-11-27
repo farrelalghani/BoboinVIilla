@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\SiteSetting;
+use App\Services\Payment\ManualPaymentService;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Attributes\Layout;
 use Livewire\Volt\Component;
@@ -11,6 +12,7 @@ new #[Layout('layouts.admin')] class extends Component
     {
         $heroImage = SiteSetting::get('hero_image');
         $heroImageUrl = $heroImage ? Storage::url($heroImage) : '/images/images.jpg';
+        $bankDetails = ManualPaymentService::bankDetails();
 
         return [
             'heroImage'      => $heroImage,
@@ -18,6 +20,7 @@ new #[Layout('layouts.admin')] class extends Component
             'heroTitle'      => SiteSetting::get('hero_title', 'Temukan Villa Impian Anda'),
             'heroSubtitle'   => SiteSetting::get('hero_subtitle', 'Ribuan villa premium di destinasi wisata terbaik Indonesia siap menyambut Anda.'),
             'isCustomBanner' => !empty($heroImage),
+            'bankDetails'    => $bankDetails,
         ];
     }
 }; ?>
@@ -39,11 +42,11 @@ new #[Layout('layouts.admin')] class extends Component
     </div>
 
     {{-- Notifikasi Sukses --}}
-    @if(session('success'))
+    @if(session('success') || session('bank_success'))
         <div class="mb-6 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl p-4 flex items-center justify-between shadow-sm">
             <div class="flex items-center gap-3">
                 <span class="text-xl">✅</span>
-                <p class="text-sm font-medium">{{ session('success') }}</p>
+                <p class="text-sm font-medium">{{ session('success') ?? session('bank_success') }}</p>
             </div>
             <button type="button" onclick="this.parentElement.remove()" class="text-emerald-500 hover:text-emerald-700 text-lg">✕</button>
         </div>
@@ -52,7 +55,7 @@ new #[Layout('layouts.admin')] class extends Component
     {{-- Error Validasi --}}
     @if($errors->any())
         <div class="mb-6 bg-rose-50 border border-rose-200 text-rose-800 rounded-xl p-4 shadow-sm">
-            <p class="text-sm font-semibold mb-1">Gagal memperbarui banner:</p>
+            <p class="text-sm font-semibold mb-1">Gagal memperbarui pengaturan:</p>
             <ul class="list-disc list-inside text-xs space-y-0.5">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
@@ -62,8 +65,8 @@ new #[Layout('layouts.admin')] class extends Component
     @endif
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-        {{-- Form Pengaturan Banner --}}
-        <div class="lg:col-span-2">
+        {{-- Kolom Kiri: Banner & Rekening --}}
+        <div class="lg:col-span-2 space-y-6">
             <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-6">
                 <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
                     <div>
@@ -158,6 +161,69 @@ new #[Layout('layouts.admin')] class extends Component
                         </form>
                     </div>
                 @endif
+            </div>
+
+            {{-- Form Pengaturan Rekening Pembayaran Manual --}}
+            <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-5 sm:p-6">
+                <div class="flex items-center justify-between pb-4 border-b border-gray-100 mb-6">
+                    <div>
+                        <h3 class="font-semibold text-gray-800 text-base">Rekening Pembayaran (Transfer Bank Manual)</h3>
+                        <p class="text-xs text-gray-500 mt-0.5">Rekening ini ditampilkan kepada tamu saat menyetujui pesanan untuk pembayaran transfer manual</p>
+                    </div>
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                        Aktif
+                    </span>
+                </div>
+
+                @if($bankDetails['account_number'] === '1234567890')
+                    <div class="mb-5 p-3.5 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800 flex items-start gap-2.5">
+                        <span class="text-base leading-none">⚠️</span>
+                        <span>Nomor rekening masih menggunakan nilai contoh (<code>1234567890</code>). Segera perbarui dengan rekening resmi Boboin Villa Anda sebelum menerima tamu.</span>
+                    </div>
+                @endif
+
+                <form method="POST" action="{{ route('admin.pengaturan.rekening') }}" class="space-y-4">
+                    @csrf
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Bank</label>
+                            <input type="text" name="payment_manual_bank"
+                                   value="{{ old('payment_manual_bank', $bankDetails['bank']) }}"
+                                   placeholder="Contoh: BCA, Mandiri, BRI, BNI"
+                                   required maxlength="50"
+                                   class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a] transition">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Nomor Rekening</label>
+                            <input type="text" name="payment_manual_account_number"
+                                   value="{{ old('payment_manual_account_number', $bankDetails['account_number']) }}"
+                                   placeholder="Contoh: 1234567890"
+                                   required maxlength="50"
+                                   class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a] transition">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Atas Nama (Pemilik Rekening)</label>
+                        <input type="text" name="payment_manual_account_name"
+                               value="{{ old('payment_manual_account_name', $bankDetails['account_name']) }}"
+                               placeholder="Contoh: PT Boboin Villa Indonesia / Farrel Muhammad"
+                               required maxlength="100"
+                               class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a8a]/20 focus:border-[#1e3a8a] transition">
+                    </div>
+
+                    <div class="pt-3 border-t border-gray-100">
+                        <button type="submit"
+                                class="inline-flex items-center gap-2 px-6 py-2.5 bg-[#1e3a8a] hover:bg-blue-900 text-white text-sm font-semibold rounded-xl shadow transition">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Simpan Rekening Pembayaran
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 

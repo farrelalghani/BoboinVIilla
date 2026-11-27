@@ -207,6 +207,7 @@ new #[Layout('layouts.admin')] class extends Component
                         <div>
                             <p class="text-gray-400 text-xs mb-1">Villa</p>
                             <p class="font-medium text-gray-800">{{ $detailPayment->booking->villa->name }}</p>
+                            <p class="text-gray-500 text-xs font-mono mt-0.5">{{ $detailPayment->booking->booking_code }}</p>
                         </div>
                         <div>
                             <p class="text-gray-400 text-xs mb-1">Bank Tujuan</p>
@@ -226,10 +227,22 @@ new #[Layout('layouts.admin')] class extends Component
                     <div>
                         <p class="text-gray-400 text-xs mb-2">Bukti Transfer</p>
                         @if($detailPayment->receipt_image)
-                            <a href="{{ route('admin.payments.receipt', $detailPayment) }}"
-                                class="inline-flex items-center gap-2 text-[#1e3a8a] font-medium hover:underline">
-                                Unduh bukti transfer
-                            </a>
+                            <div class="space-y-2.5">
+                                @if(!str_ends_with(strtolower($detailPayment->receipt_image), '.pdf'))
+                                    <div class="rounded-xl border border-gray-200 bg-gray-50 p-2 overflow-hidden">
+                                        <img src="{{ route('admin.payments.receipt', ['payment' => $detailPayment, 'preview' => 1]) }}"
+                                             alt="Bukti Transfer #{{ $detailPayment->id }}"
+                                             class="max-h-72 w-auto mx-auto rounded-lg object-contain">
+                                    </div>
+                                @endif
+                                <a href="{{ route('admin.payments.receipt', $detailPayment) }}"
+                                    class="inline-flex items-center gap-2 px-3.5 py-2 bg-blue-50 text-[#1e3a8a] rounded-xl text-xs font-medium hover:bg-blue-100 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                    </svg>
+                                    Unduh bukti transfer
+                                </a>
+                            </div>
                         @else
                             <div class="bg-gray-50 rounded-xl p-6 text-center text-gray-400 text-xs">
                                 Tamu belum mengupload bukti transfer

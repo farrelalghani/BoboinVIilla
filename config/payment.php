@@ -13,7 +13,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Manual Transfer — data rekening tujuan
+    | Manual Transfer — data rekening tujuan fallback (.env)
     |--------------------------------------------------------------------------
     */
     'manual' => [

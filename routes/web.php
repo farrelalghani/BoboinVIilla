@@ -4,6 +4,7 @@ use App\Exports\BookingsExport;
 use App\Models\Booking;
 use App\Models\Payment;
 use App\Models\Villa;
+use App\Services\Payment\ManualPaymentService;
 use App\Services\Payment\XenditPaymentService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -49,13 +50,25 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Volt::route('/bookings', 'admin.bookings.index')->name('bookings.index');
     Volt::route('/payments', 'admin.payments.index')->name('payments.index');
 
-    Route::get('/payments/{payment}/receipt', function (Payment $payment) {
+    Route::get('/payments/{payment}/receipt', function (Request $request, Payment $payment) {
         abort_unless(
             $payment->receipt_image && Storage::disk('local')->exists($payment->receipt_image),
             404
         );
 
-        return Storage::disk('local')->download($payment->receipt_image);
+        if ($request->boolean('preview')) {
+            $mime = Storage::disk('local')->mimeType($payment->receipt_image);
+            if (in_array($mime, ['image/jpeg', 'image/png', 'image/webp'], true)) {
+                return Storage::disk('local')->response($payment->receipt_image, null, [
+                    'X-Content-Type-Options'  => 'nosniff',
+                    'Content-Security-Policy' => "default-src 'none'; sandbox",
+                ]);
+            }
+        }
+
+        return Storage::disk('local')->download($payment->receipt_image, null, [
+            'X-Content-Type-Options' => 'nosniff',
+        ]);
     })->name('payments.receipt');
 
     // Upload foto villa (mendukung banyak foto sekaligus)
@@ -209,6 +222,27 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
         return redirect()->route('admin.pengaturan.index')
             ->with('success', 'Foto cover beranda berhasil dikembalikan ke tampilan bawaan.');
     })->name('pengaturan.banner.reset');
+
+    // Update pengaturan rekening pembayaran manual
+    Route::post('/pengaturan/rekening', function (Request $request) {
+        $validated = $request->validate([
+            'payment_manual_bank'           => ['required', 'string', 'max:50'],
+            'payment_manual_account_number' => ['required', 'string', 'max:50', 'regex:/^[0-9\-\s]+$/'],
+            'payment_manual_account_name'   => ['required', 'string', 'max:100'],
+        ], [
+            'payment_manual_bank.required'           => 'Nama bank wajib diisi.',
+            'payment_manual_account_number.required' => 'Nomor rekening wajib diisi.',
+            'payment_manual_account_number.regex'    => 'Nomor rekening hanya boleh berisi angka, spasi, atau tanda hubung.',
+            'payment_manual_account_name.required'   => 'Nama pemilik rekening wajib diisi.',
+        ]);
+
+        \App\Models\SiteSetting::set('payment_manual_bank', strtoupper(trim($validated['payment_manual_bank'])));
+        \App\Models\SiteSetting::set('payment_manual_account_number', trim($validated['payment_manual_account_number']));
+        \App\Models\SiteSetting::set('payment_manual_account_name', trim($validated['payment_manual_account_name']));
+
+        return redirect()->route('admin.pengaturan.index')
+            ->with('bank_success', 'Rekening pembayaran manual berhasil diperbarui!');
+    })->name('pengaturan.rekening');
 });
 
 // Guest public routes (tanpa login)
@@ -216,7 +250,7 @@ Route::name('guest.')->group(function () {
     Volt::route('/cek-pesanan', 'guest.cek-pesanan')->name('cek-pesanan');
     Volt::route('/payment/{bookingCode}', 'guest.payment-upload')->name('payment.upload');
 
-    Route::post('/payment/{bookingCode}/xendit', function (Request $request, string $bookingCode) {
+    Route::post('/payment/{bookingCode}/upload', function (Request $request, string $bookingCode) {
         $booking = Booking::with(['villa', 'payment'])
             ->where('booking_code', strtoupper($bookingCode))
             ->where('status', 'approved')
@@ -224,45 +258,124 @@ Route::name('guest.')->group(function () {
 
         $maxCapacity = $booking->villa->capacity;
 
-        $request->validate([
+        $validated = $request->validate([
             'guest_name'  => ['required', 'string', 'max:100'],
-            'guest_phone' => ['required', 'string', 'max:20'],
-            'guest_email' => ['required', 'email'],
+            'guest_phone' => ['required', 'string', 'min:7', 'max:20', 'regex:/^[0-9+\-\s()]+$/'],
+            'guest_email' => ['required', 'email:rfc', 'max:150'],
             'guest_city'  => ['required', 'string', 'max:100'],
             'adult_count' => ['required', 'integer', 'min:1', "max:{$maxCapacity}"],
             'child_count' => ['required', 'integer', 'min:0', "max:{$maxCapacity}"],
+            'receipt'     => [
+                'required',
+                'file',
+                'mimes:jpg,jpeg,png,webp,pdf',
+                'mimetypes:image/jpeg,image/png,image/webp,application/pdf',
+                'max:5120',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    if (! $value instanceof \Illuminate\Http\UploadedFile || ! $value->isValid()) {
+                        $fail('File bukti pembayaran tidak valid atau gagal diunggah.');
+                        return;
+                    }
+
+                    $mime = $value->getMimeType();
+                    if ($mime === 'application/pdf') {
+                        $handle = @fopen($value->getRealPath(), 'rb');
+                        $header = $handle ? fread($handle, 5) : '';
+                        if ($handle) {
+                            fclose($handle);
+                        }
+                        if ($header !== '%PDF-') {
+                            $fail('File PDF bukti pembayaran tidak valid atau rusak.');
+                        }
+                        return;
+                    }
+
+                    if (@getimagesize($value->getRealPath()) === false) {
+                        $fail('File gambar bukti pembayaran tidak valid atau rusak.');
+                    }
+                },
+            ],
         ], [
             'guest_name.required'  => 'Nama lengkap wajib diisi.',
             'guest_phone.required' => 'Nomor HP wajib diisi.',
+            'guest_phone.min'      => 'Nomor HP minimal 7 karakter.',
+            'guest_phone.regex'    => 'Format nomor HP tidak valid.',
             'guest_email.required' => 'Email wajib diisi.',
             'guest_email.email'    => 'Format email tidak valid.',
             'guest_city.required'  => 'Asal kota wajib diisi.',
             'adult_count.min'      => 'Minimal 1 tamu dewasa.',
             'adult_count.max'      => "Jumlah dewasa melebihi kapasitas villa ({$maxCapacity} orang).",
             'child_count.max'      => "Jumlah anak melebihi kapasitas villa ({$maxCapacity} orang).",
+            'receipt.required'     => 'Bukti transfer wajib diunggah.',
+            'receipt.file'         => 'Bukti transfer harus berupa berkas yang valid.',
+            'receipt.mimes'        => 'Format bukti transfer harus JPG, PNG, WebP, atau PDF.',
+            'receipt.mimetypes'    => 'Tipe file bukti transfer harus JPG, PNG, WebP, atau PDF.',
+            'receipt.max'          => 'Ukuran file bukti transfer maksimal 5MB.',
         ]);
 
-        $totalGuests = (int) $request->adult_count + (int) $request->child_count;
+        $totalGuests = (int) $validated['adult_count'] + (int) $validated['child_count'];
         if ($totalGuests > $maxCapacity) {
             return back()->withErrors([
                 'adult_count' => "Total tamu ({$totalGuests} orang) melebihi kapasitas villa ({$maxCapacity} orang).",
             ])->withInput();
         }
 
-        $booking->update([
-            'guest_name'  => $request->guest_name,
-            'guest_phone' => $request->guest_phone,
-            'guest_email' => $request->guest_email,
-            'guest_city'  => $request->guest_city,
-            'adult_count' => $request->adult_count,
-            'child_count' => $request->child_count,
-        ]);
+        $service = new ManualPaymentService();
+        $service->submitTransfer($booking, $validated, $request->file('receipt'));
 
-        $service = new XenditPaymentService();
-        $payment = $service->createPayment($booking->fresh(['villa']));
+        return redirect()->route('guest.payment.upload', $booking->booking_code)
+            ->with('success', 'Bukti transfer berhasil dikirim! Admin akan memverifikasi dalam 1×24 jam.');
+    })->middleware('throttle:5,1')->name('payment.upload.post');
 
-        return redirect($payment->xendit_invoice_url);
-    })->middleware('throttle:5,1')->name('payment.xendit.post');
+    if (config('payment.driver') === 'xendit') {
+        Route::post('/payment/{bookingCode}/xendit', function (Request $request, string $bookingCode) {
+            $booking = Booking::with(['villa', 'payment'])
+                ->where('booking_code', strtoupper($bookingCode))
+                ->where('status', 'approved')
+                ->firstOrFail();
+
+            $maxCapacity = $booking->villa->capacity;
+
+            $request->validate([
+                'guest_name'  => ['required', 'string', 'max:100'],
+                'guest_phone' => ['required', 'string', 'max:20'],
+                'guest_email' => ['required', 'email'],
+                'guest_city'  => ['required', 'string', 'max:100'],
+                'adult_count' => ['required', 'integer', 'min:1', "max:{$maxCapacity}"],
+                'child_count' => ['required', 'integer', 'min:0', "max:{$maxCapacity}"],
+            ], [
+                'guest_name.required'  => 'Nama lengkap wajib diisi.',
+                'guest_phone.required' => 'Nomor HP wajib diisi.',
+                'guest_email.required' => 'Email wajib diisi.',
+                'guest_email.email'    => 'Format email tidak valid.',
+                'guest_city.required'  => 'Asal kota wajib diisi.',
+                'adult_count.min'      => 'Minimal 1 tamu dewasa.',
+                'adult_count.max'      => "Jumlah dewasa melebihi kapasitas villa ({$maxCapacity} orang).",
+                'child_count.max'      => "Jumlah anak melebihi kapasitas villa ({$maxCapacity} orang).",
+            ]);
+
+            $totalGuests = (int) $request->adult_count + (int) $request->child_count;
+            if ($totalGuests > $maxCapacity) {
+                return back()->withErrors([
+                    'adult_count' => "Total tamu ({$totalGuests} orang) melebihi kapasitas villa ({$maxCapacity} orang).",
+                ])->withInput();
+            }
+
+            $booking->update([
+                'guest_name'  => $request->guest_name,
+                'guest_phone' => $request->guest_phone,
+                'guest_email' => $request->guest_email,
+                'guest_city'  => $request->guest_city,
+                'adult_count' => $request->adult_count,
+                'child_count' => $request->child_count,
+            ]);
+
+            $service = new XenditPaymentService();
+            $payment = $service->createPayment($booking->fresh(['villa']));
+
+            return redirect($payment->xendit_invoice_url);
+        })->middleware('throttle:5,1')->name('payment.xendit.post');
+    }
 
     Route::get('/invoice/{bookingCode}', function (string $bookingCode) {
         $rateLimitKey = 'invoice-download:'.request()->ip();
@@ -313,6 +426,10 @@ Route::post('/xendit/webhook', function (Request $request) {
 
     if (!$invoiceId) {
         return response()->json(['message' => 'Missing invoice id'], 400);
+    }
+
+    if (config('payment.driver') !== 'xendit') {
+        return response()->json(['message' => 'Xendit gateway is disabled'], 503);
     }
 
     $booking = Booking::with('payment')

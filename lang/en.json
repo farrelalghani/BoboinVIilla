@@ -224,5 +224,17 @@
     "Rekening Tujuan Transfer": "Bank Transfer Destination",
     "Instruksi Pembayaran": "Payment Instructions",
     "Kirim Bukti Pembayaran": "Submit Proof of Payment",
-    "Gunakan kode booking Anda untuk mengecek status pembayaran.": "Use your booking code to verify payment status."
+    "Gunakan kode booking Anda untuk mengecek status pembayaran.": "Use your booking code to verify payment status.",
+    "Bukti pembayaran Anda sedang diverifikasi oleh Admin dalam 1×24 jam.": "Your payment proof is being verified by Admin within 1×24 hours.",
+    "Bank": "Bank",
+    "Bukti pembayaran sebelumnya ditolak. Silakan unggah ulang bukti transfer yang valid.": "Your previous payment proof was rejected. Please re-upload a valid transfer receipt.",
+    "Silakan transfer sesuai nominal total tagihan, lalu unggah bukti transfer di bawah ini.": "Please transfer the exact total amount below, then upload your transfer receipt.",
+    "Salin": "Copy",
+    "Atas Nama": "Account Name",
+    "Pilih file bukti transfer (struk / screenshot)": "Choose transfer receipt file (receipt / screenshot)",
+    "Format JPG, PNG, WebP, atau PDF (Maks. 5MB)": "JPG, PNG, WebP, or PDF format (Max. 5MB)",
+    "Ukuran file melebihi batas maksimal 5MB.": "File size exceeds the 5MB maximum limit.",
+    "Mengirim...": "Submitting...",
+    "Pembayaran diverifikasi manual oleh admin Boboin Villa dalam 1×24 jam.": "Payments are manually verified by Boboin Villa admin within 1×24 hours.",
+    "Bukti transfer ke Bank :bank sebesar Rp :amount telah dikirim dan sedang diverifikasi Admin dalam 1×24 jam.": "Your transfer receipt to Bank :bank for Rp :amount has been submitted and is awaiting Admin verification within 1×24 hours."
 }

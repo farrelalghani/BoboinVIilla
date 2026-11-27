@@ -179,7 +179,14 @@ new #[Layout('layouts.app')] class extends Component
                                 </svg>
                                 <span>{{ __('Menunggu konfirmasi pembayaran... Halaman akan diperbarui otomatis.') }}</span>
                             </div>
-                            @if($booking->payment?->xendit_invoice_url)
+                            @if($booking->payment?->payment_type === 'manual_transfer')
+                                <div class="bg-blue-50/70 border border-blue-100 rounded-xl px-4 py-3 text-xs text-gray-600">
+                                    {{ __('Bukti transfer ke Bank :bank sebesar Rp :amount telah dikirim dan sedang diverifikasi Admin dalam 1×24 jam.', [
+                                        'bank'   => $booking->payment->bank ?? 'BCA',
+                                        'amount' => number_format($booking->payment->gross_amount, 0, ',', '.'),
+                                    ]) }}
+                                </div>
+                            @elseif(config('payment.driver') === 'xendit' && $booking->payment?->xendit_invoice_url)
                                 <a href="{{ $booking->payment->xendit_invoice_url }}" target="_blank"
                                     class="block w-full py-3 border border-[#3a6484] text-[#3a6484] rounded-xl font-medium hover:bg-[#3a6484] hover:text-white transition text-center text-sm">
                                     {{ __('Lanjutkan Pembayaran →') }}

@@ -236,5 +236,8 @@
     "Ukuran file melebihi batas maksimal 5MB.": "File size exceeds the 5MB maximum limit.",
     "Mengirim...": "Submitting...",
     "Pembayaran diverifikasi manual oleh admin Boboin Villa dalam 1×24 jam.": "Payments are manually verified by Boboin Villa admin within 1×24 hours.",
-    "Bukti transfer ke Bank :bank sebesar Rp :amount telah dikirim dan sedang diverifikasi Admin dalam 1×24 jam.": "Your transfer receipt to Bank :bank for Rp :amount has been submitted and is awaiting Admin verification within 1×24 hours."
+    "Bukti transfer ke Bank :bank sebesar Rp :amount telah dikirim dan sedang diverifikasi Admin dalam 1×24 jam.": "Your transfer receipt to Bank :bank for Rp :amount has been submitted and is awaiting Admin verification within 1×24 hours.",
+    "Rekomendasi & bantuan instan": "Instant recommendations & help",
+    "Chat langsung dengan admin": "Chat directly with admin",
+    "Bantuan & Tanya AI": "Help & Ask AI"
 }

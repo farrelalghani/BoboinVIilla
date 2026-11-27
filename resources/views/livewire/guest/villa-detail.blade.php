@@ -474,7 +474,7 @@ new #[Layout('layouts.app')] class extends Component
 
         {{-- Booking Widget --}}
         <div class="lg:col-span-1">
-            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg sticky top-24">
+            <div class="bg-white border border-gray-200 rounded-2xl p-6 shadow-lg sticky top-20">
                 <div class="mb-5">
                     <p class="text-xs text-gray-400 mb-0.5">{{ __('Mulai dari') }}</p>
                     <span class="text-2xl font-bold text-[#3a6484]">

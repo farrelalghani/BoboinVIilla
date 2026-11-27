@@ -14,6 +14,7 @@ new #[Layout('layouts.admin')] class extends Component
     public ?int  $detailId    = null;
     public bool  $showDetail  = false;
     public string $rejectNote = '';
+    public ?string $statusMessage = null;
 
     public function openDetail(int $id): void
     {
@@ -24,17 +25,23 @@ new #[Layout('layouts.admin')] class extends Component
 
     public function verify(int $id, ManualPaymentService $service): void
     {
+        $this->statusMessage = null;
         $payment = Payment::with('booking')->findOrFail($id);
         abort_unless($payment->payment_type === 'manual_transfer' && $payment->payment_status === 'uploaded', 400);
-        $service->verifyPayment($payment);
+        if ($service->verifyPayment($payment)) {
+            $this->statusMessage = "Pembayaran {$payment->booking->booking_code} berhasil diverifikasi menjadi Lunas.";
+        }
         $this->showDetail = false;
     }
 
     public function reject(int $id, ManualPaymentService $service): void
     {
+        $this->statusMessage = null;
         $payment = Payment::with('booking')->findOrFail($id);
         abort_unless($payment->payment_type === 'manual_transfer' && $payment->payment_status === 'uploaded', 400);
-        $service->rejectPayment($payment, $this->rejectNote);
+        if ($service->rejectPayment($payment, $this->rejectNote)) {
+            $this->statusMessage = "Bukti transfer {$payment->booking->booking_code} telah ditolak. Tamu dapat mengunggah ulang.";
+        }
         $this->showDetail = false;
     }
 
@@ -63,6 +70,19 @@ new #[Layout('layouts.admin')] class extends Component
     <div class="flex items-center justify-between mb-6">
         <h2 class="text-2xl font-semibold text-gray-800">Verifikasi Pembayaran</h2>
     </div>
+
+    @if($statusMessage)
+        <div class="mb-4 p-4 bg-emerald-50 border border-emerald-200 rounded-xl text-sm text-emerald-800 flex items-center justify-between">
+            <span>✅ {{ $statusMessage }}</span>
+            <button wire:click="$set('statusMessage', null)" class="text-emerald-600 hover:text-emerald-800 font-bold ml-4">✕</button>
+        </div>
+    @endif
+
+    @if(session('mail_warning'))
+        <div class="mb-4 p-4 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-800">
+            ⚠️ {{ session('mail_warning') }}
+        </div>
+    @endif
 
     {{-- Filter Tab --}}
     <div class="flex gap-2 mb-6 overflow-x-auto pb-1">
@@ -272,22 +292,75 @@ new #[Layout('layouts.admin')] class extends Component
 
                     {{-- Tombol Aksi (hanya saat uploaded) --}}
                     @if($detailPayment->payment_status === 'uploaded')
-                        <div class="border-t border-gray-100 pt-4 space-y-3">
+                        <div class="border-t border-gray-100 pt-4 space-y-3" x-data="{ confirmAction: null }">
                             <p class="text-xs font-medium text-gray-700">Tindakan Admin</p>
-                            <button wire:click="verify({{ $detailPayment->id }})"
-                                wire:confirm="Verifikasi pembayaran ini? Status booking akan berubah menjadi Lunas."
-                                class="w-full py-2.5 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition text-sm">
-                                Verifikasi — Pembayaran Sah
-                            </button>
-                            <div class="space-y-2">
+
+                            {{-- Verifikasi (konfirmasi di dalam modal, tanpa dialog pop-up browser) --}}
+                            <template x-if="confirmAction !== 'verify'">
+                                <button type="button"
+                                    @click="confirmAction = 'verify'"
+                                    class="w-full py-2.5 bg-green-600 text-white rounded-xl font-medium hover:bg-green-700 transition text-sm cursor-pointer">
+                                    Verifikasi — Pembayaran Sah
+                                </button>
+                            </template>
+
+                            <template x-if="confirmAction === 'verify'">
+                                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 space-y-2.5">
+                                    <p class="text-xs text-emerald-800 font-medium">
+                                        Pastikan mutasi rekening sudah masuk. Ubah status menjadi <strong>Lunas</strong> &amp; kirim notifikasi ke tamu?
+                                    </p>
+                                    <div class="flex gap-2">
+                                        <button type="button"
+                                            wire:click="verify({{ $detailPayment->id }})"
+                                            wire:loading.attr="disabled"
+                                            class="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer disabled:opacity-60">
+                                            <span wire:loading.remove wire:target="verify">Ya, Lunaskan Sekarang</span>
+                                            <span wire:loading wire:target="verify">Memproses...</span>
+                                        </button>
+                                        <button type="button"
+                                            @click="confirmAction = null"
+                                            class="px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg text-xs font-medium transition cursor-pointer">
+                                            Batal
+                                        </button>
+                                    </div>
+                                </div>
+                            </template>
+
+                            {{-- Penolakan --}}
+                            <div class="space-y-2 pt-1">
                                 <textarea wire:model="rejectNote" rows="2"
                                     placeholder="Alasan penolakan (opsional)..."
                                     class="w-full text-sm rounded-xl border border-gray-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-300 resize-none"></textarea>
-                                <button wire:click="reject({{ $detailPayment->id }})"
-                                    wire:confirm="Tolak struk ini? Tamu akan diminta upload ulang."
-                                    class="w-full py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition text-sm">
-                                    Tolak — Struk Tidak Valid
-                                </button>
+
+                                <template x-if="confirmAction !== 'reject'">
+                                    <button type="button"
+                                        @click="confirmAction = 'reject'"
+                                        class="w-full py-2.5 bg-red-600 text-white rounded-xl font-medium hover:bg-red-700 transition text-sm cursor-pointer">
+                                        Tolak — Struk Tidak Valid
+                                    </button>
+                                </template>
+
+                                <template x-if="confirmAction === 'reject'">
+                                    <div class="bg-red-50 border border-red-200 rounded-xl p-3.5 space-y-2.5">
+                                        <p class="text-xs text-red-800 font-medium">
+                                            Yakin menolak bukti ini? Status kembali ke <strong>Disetujui</strong> agar tamu bisa mengunggah ulang.
+                                        </p>
+                                        <div class="flex gap-2">
+                                            <button type="button"
+                                                wire:click="reject({{ $detailPayment->id }})"
+                                                wire:loading.attr="disabled"
+                                                class="flex-1 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-semibold transition cursor-pointer disabled:opacity-60">
+                                                <span wire:loading.remove wire:target="reject">Ya, Tolak Struk</span>
+                                                <span wire:loading wire:target="reject">Memproses...</span>
+                                            </button>
+                                            <button type="button"
+                                                @click="confirmAction = null"
+                                                class="px-4 py-2 bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg text-xs font-medium transition cursor-pointer">
+                                                Batal
+                                            </button>
+                                        </div>
+                                    </div>
+                                </template>
                             </div>
                         </div>
                     @endif

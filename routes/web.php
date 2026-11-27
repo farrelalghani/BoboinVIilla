@@ -390,7 +390,7 @@ Route::name('guest.')->group(function () {
 
         $booking = Booking::with(['villa', 'payment'])
             ->where('booking_code', strtoupper($bookingCode))
-            ->where('status', 'paid')
+            ->whereIn('status', ['paid', 'completed'])
             ->firstOrFail();
 
         $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('pdf.invoice', ['booking' => $booking]);

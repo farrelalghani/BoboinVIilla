@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\SiteSetting;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
@@ -211,7 +212,12 @@ class ManualPaymentService implements PaymentGatewayInterface
 
         $booking = $payment->booking()->with('villa')->first();
         if ($booking?->guest_email) {
-            Mail::to($booking->guest_email)->send(new BookingPaymentVerified($booking));
+            try {
+                Mail::to($booking->guest_email)->send(new BookingPaymentVerified($booking));
+            } catch (\Throwable $e) {
+                Log::error('Gagal mengirim email verifikasi pembayaran: ' . $e->getMessage());
+                session()->flash('mail_warning', 'Pembayaran berhasil diverifikasi, tetapi email notifikasi gagal terkirim ke ' . $booking->guest_email . '. Periksa konfigurasi SMTP di .env.');
+            }
         }
 
         return true;
@@ -247,9 +253,14 @@ class ManualPaymentService implements PaymentGatewayInterface
 
         $booking = $payment->booking()->with('villa')->first();
         if ($booking?->guest_email) {
-            Mail::to($booking->guest_email)->send(
-                new BookingPaymentRejected($booking, $reason ?: null)
-            );
+            try {
+                Mail::to($booking->guest_email)->send(
+                    new BookingPaymentRejected($booking, $reason ?: null)
+                );
+            } catch (\Throwable $e) {
+                Log::error('Gagal mengirim email penolakan pembayaran: ' . $e->getMessage());
+                session()->flash('mail_warning', 'Bukti transfer ditolak, tetapi email notifikasi gagal terkirim ke ' . $booking->guest_email . '. Periksa konfigurasi SMTP di .env.');
+            }
         }
 
         return true;

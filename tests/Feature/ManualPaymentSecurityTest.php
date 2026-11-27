@@ -277,6 +277,30 @@ class ManualPaymentSecurityTest extends TestCase
         // Double-verify tidak mengirim email kedua atau mengembalikan true lagi
         $this->assertFalse($service->verifyPayment($updatedPayment));
         Mail::assertSent(BookingPaymentVerified::class, 1);
+
+        // Tamu dapat mengunduh invoice PDF saat status paid & completed (404 jika belum paid)
+        $invoiceResponse = $this->get('/invoice/BVL-TEST01');
+        $invoiceResponse->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->booking->fresh()->update(['status' => 'completed']);
+        $this->get('/invoice/BVL-TEST01')->assertOk();
+
+        $this->booking->fresh()->update(['status' => 'pending_payment']);
+        $this->get('/invoice/BVL-TEST01')->assertStatus(404);
+    }
+
+    public function test_verify_still_succeeds_gracefully_if_smtp_mail_throws_exception(): void
+    {
+        $this->post('/payment/BVL-TEST01/upload', $this->validPayload())->assertRedirect();
+        $payment = $this->booking->fresh(['payment'])->payment;
+
+        Mail::shouldReceive('to')->andThrow(new \RuntimeException('SMTP connection refused'));
+
+        $service = new ManualPaymentService();
+        $this->assertTrue($service->verifyPayment($payment));
+        $this->assertSame('verified', $payment->fresh()->payment_status);
+        $this->assertSame('paid', $this->booking->fresh()->status);
     }
 
     public function test_admin_can_download_and_safely_preview_receipt_with_nosniff_header(): void
